@@ -11,10 +11,6 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "esModuleInterop": true,
-    "lib": [
-      "es6",
-      "webworker"
-    ]
+    "esModuleInterop": true
   }
 }
