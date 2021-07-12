@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Headers, HttpCode, HttpStatus, Post, Put, Req, UseFilters } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Headers, HttpCode, HttpStatus, Post, Put, Query, Req, UseFilters } from "@nestjs/common";
 import { ClientProxy, ClientProxyFactory, Transport } from "@nestjs/microservices";
 import { ApiCreatedResponse, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { Request } from "express";
@@ -10,23 +10,25 @@ import { ValidationExceptionFilter } from "../exceptions/filters/Validation.exce
 import { RegistrationValidationPipe } from "../pipes/validation/registration.validation.pipe";
 import { OptionalDataValidationPipe } from "../pipes/validation/optionalData.validation.pipe";
 import { ChangeEmailValidationPipe } from "../pipes/validation/changeEmail.validation.pipe";
-import { ContactFormValidationPipe } from "../pipes/validation/contact-form.validation.pipe";
+import { ContactFormValidationPipe } from "../pipes/validation/contactForm.validation.pipe";
 import { LoginValidationPipe } from "../pipes/validation/login.validation.pipe";
 import { RoomValidationPipe } from "../pipes/validation/room.validation.pipe";
 import { LoginByEmailDto, LoginByPhoneNumberDto, LoginByUsernameDto } from "./dto/login.dto";
 import { AddOrUpdateOptionalDataDto } from "./dto/add-or-update-optional-data.dto";
-import { UserChangePhoneNumberDto } from "./dto/update-phone.dto";
-import { UserChangePasswordDto } from "./dto/update-password.dto";
+import { ChangePhoneNumberDto } from "./dto/update-phone.dto";
+import { ChangePasswordDto } from "./dto/update-password.dto";
 import { ForgotPasswordDto } from "./dto/forgot-password.dto";
-import { UserChangeEmailDto } from "./dto/update-email.dto";
+import { ChangeEmailDto } from "./dto/update-email.dto";
 import { ContactFormDto } from "./dto/contact-form.dto";
-import { VerifyUuidDto } from "./dto/verify-uuid.dto";
+import { VerifyPasswordResetDto } from "./dto/verify-password-reset.dto";
 import { SignUpDto } from "./dto/sign-up.dto";
 import { RoomDto } from "./dto/room.dto";
+import { ChangeUsernameValidationPipe } from "../pipes/validation/changeUsername.validation.pipe";
+import { ChangeUsernameDto } from "./dto/update-username.dto";
 
 @UseFilters(new RequestBodyAndInternalExceptionFilter(), new ValidationExceptionFilter())
 @Controller("public")
-export class EntranceController {
+export class PublicController {
   client: ClientProxy;
 
   constructor() {
@@ -42,7 +44,7 @@ export class EntranceController {
 
   @Post("/sign-up")
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: "Register entrance." })
+  @ApiOperation({ summary: "Register public." })
   @ApiCreatedResponse({})
   async register(@Body(new RegistrationValidationPipe()) createUserDto: SignUpDto): Promise<Observable<any>> {
     return this.client.send({ cmd: "register" }, createUserDto);
@@ -50,7 +52,7 @@ export class EntranceController {
 
   @Post("/login")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "Log in the entrance." })
+  @ApiOperation({ summary: "Log in the public." })
   @ApiCreatedResponse({})
   async login(
     @Req() req: Request,
@@ -59,27 +61,37 @@ export class EntranceController {
   ): Promise<Observable<any>> {
     return this.client.send(
       { cmd: "login" },
-      { ip: req.socket.remoteAddress, userAgent: headers["user-agent"], fingerprint: headers["fingerprint"], loginUserDto }
+      {
+        ip: req.socket.remoteAddress,
+        userAgent: headers["user-agent"],
+        fingerprint: headers["fingerprint"],
+        loginUserDto
+      }
     );
   }
 
-  @Post("/forgot-password")
+  @Post("/reset-password")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Request resetting for a forgotten password." })
   @ApiOkResponse({})
-  async forgotPassword(@Req() req: Request, @Headers() headers, @Body() forgotPasswordDto: ForgotPasswordDto): Promise<Observable<any>> {
+  async resetPassword(@Req() req: Request, @Headers() headers, @Body() forgotPasswordDto: ForgotPasswordDto): Promise<Observable<any>> {
     return this.client.send(
-      { cmd: "forgot-password" },
-      { ip: req.socket.remoteAddress, userAgent: headers["user-agent"], fingerprint: headers["fingerprint"], forgotPasswordDto }
+      { cmd: "reset-password" },
+      {
+        ip: req.socket.remoteAddress,
+        userAgent: headers["user-agent"],
+        fingerprint: headers["fingerprint"],
+        forgotPasswordDto
+      }
     );
   }
 
-  @Put("/forgot-password-verify")
+  @Put("/verify-password-reset")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Verify a password reset operation and create a new password." })
   @ApiOkResponse({})
-  async forgotPasswordVerify(@Req() req: Request, @Body() verifyUuidDto: VerifyUuidDto): Promise<Observable<any>> {
-    return this.client.send({ cmd: "forgot-password-verify" }, { userId: req.user.userId, verifyUuidDto });
+  async verifyPasswordReset(@Req() req: Request, @Body() verifyPasswordResetDto: VerifyPasswordResetDto): Promise<Observable<any>> {
+    return this.client.send({ cmd: "verify-password-reset" }, { userId: req.user.userId, verifyPasswordResetDto });
   }
 
   @Get("/logout")
@@ -100,40 +112,106 @@ export class EntranceController {
     );
   }
 
-  @Put("/email/:id")
+  @Put("/email")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Change an email." })
   @ApiCreatedResponse({})
   async changeEmail(
     @Req() req: Request,
-    @Body(new ChangeEmailValidationPipe()) changeEmailDto: UserChangeEmailDto
+    @Headers() headers,
+    @Body(new ChangeEmailValidationPipe()) changeEmailDto: ChangeEmailDto
   ): Promise<Observable<any>> {
-    return this.client.send({ cmd: "change-email" }, { userId: req.user.userId, changeEmailDto });
+    return this.client.send(
+      { cmd: "change-email" },
+      {
+        userId: req.user.userId,
+        ip: req.socket.remoteAddress,
+        userAgent: headers["user-agent"],
+        fingerprint: headers["fingerprint"],
+        changeEmailDto
+      }
+    );
   }
 
-  @Put("/password/:id")
+  @Put("/username")
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: "Change a password." })
+  @ApiOperation({ summary: "Change a username." })
   @ApiCreatedResponse({})
-  async changePassword(
+  async changeUsername(
     @Req() req: Request,
-    @Body(new ChangePasswordValidationPipe()) changePasswordDto: UserChangePasswordDto
+    @Headers() headers,
+    @Body(new ChangeUsernameValidationPipe()) changeUsernameDto: ChangeUsernameDto
   ): Promise<Observable<any>> {
-    return this.client.send({ cmd: "change-password" }, { userId: req.user.userId, changePasswordDto });
+    return this.client.send(
+      { cmd: "change-username" },
+      {
+        userId: req.user.userId,
+        ip: req.socket.remoteAddress,
+        userAgent: headers["user-agent"],
+        fingerprint: headers["fingerprint"],
+        changeUsernameDto
+      }
+    );
   }
 
-  @Put("/phone/:id")
+  @Put("/phone")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Change a phone number." })
   @ApiCreatedResponse({})
   async changePhoneNumber(
     @Req() req: Request,
-    @Body(new ChangePhoneNumberValidationPipe()) changePhoneNumberDto: UserChangePhoneNumberDto
+    @Headers() headers,
+    @Body(new ChangePhoneNumberValidationPipe()) changePhoneNumberDto: ChangePhoneNumberDto
   ): Promise<Observable<any>> {
-    return this.client.send({ cmd: "change-phone" }, { userId: req.user.userId, changePhoneNumberDto });
+    return this.client.send(
+      { cmd: "change-phone" },
+      {
+        userId: req.user.userId,
+        ip: req.socket.remoteAddress,
+        userAgent: headers["user-agent"],
+        fingerprint: headers["fingerprint"],
+        changePhoneNumberDto
+      }
+    );
   }
 
-  @Put("/optional/:id")
+  @Put("/password")
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: "Change a password." })
+  @ApiCreatedResponse({})
+  async changePassword(
+    @Req() req: Request,
+    @Headers() headers,
+    @Body(new ChangePasswordValidationPipe()) changePasswordDto: ChangePasswordDto
+  ): Promise<Observable<any>> {
+    return this.client.send(
+      { cmd: "change-password" },
+      {
+        userId: req.user.userId,
+        ip: req.socket.remoteAddress,
+        userAgent: headers["user-agent"],
+        fingerprint: headers["fingerprint"],
+        changePasswordDto
+      }
+    );
+  }
+
+  @Post("/verify-change")
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: "Verify a primary data change." })
+  @ApiCreatedResponse({})
+  async verifyPrimaryDataChange(@Req() req: Request, @Query() query): Promise<Observable<any>> {
+    return this.client.send(
+      { cmd: "verify-primary-data-change" },
+      {
+        userId: req.user.userId,
+        verification: query.verification,
+        dataType: query.dataType
+      }
+    );
+  }
+
+  @Put("/optional")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Add or update an optional data (first and last name, birthday)." })
   @ApiCreatedResponse({})
@@ -146,7 +224,7 @@ export class EntranceController {
 
   @Get("/refresh-session")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "Refresh the entrance session." })
+  @ApiOperation({ summary: "Refresh the public session." })
   @ApiCreatedResponse({})
   async refreshAccessToken(@Req() req: Request, @Headers() headers): Promise<Observable<any>> {
     return this.client.send(
@@ -161,7 +239,7 @@ export class EntranceController {
       }
     );
   }
-  
+
   @Post("/contact")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Handle an appeal." })
@@ -169,90 +247,89 @@ export class EntranceController {
   async contact(@Body(new ContactFormValidationPipe()) contactFormDto: ContactFormDto): Promise<Observable<any>> {
     return this.client.send({ cmd: "handle-appeal" }, { contactFormDto });
   }
-  
+
   @Get("/token")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Generate a client access-token." })
   @ApiCreatedResponse({})
   async generateToken(@Req() req: Request, @Headers() headers): Promise<Observable<any>> {
-    return this.client.send({ cmd: "generate-client-token" }, { ip: req.socket.remoteAddress, userAgent: headers["user-agent"], fingerprint: headers["fingerprint"] });
+    return this.client.send(
+      { cmd: "generate-client-token" },
+      { ip: req.socket.remoteAddress, userAgent: headers["user-agent"], fingerprint: headers["fingerprint"] }
+    );
   }
-  
-  // TODO микросервисы (перенастроить команды, все сервисы должны просто возвращать что-то,
-  //  параметры входа изменить, убрать миддлвэры и пайпы с сервисов, всё только на публичном апи)
-  
+
   @Post("/create-room")
   @HttpCode(HttpStatus.CREATED)
   async createRoom(@Body(new RoomValidationPipe()) roomDto: RoomDto): Promise<Observable<any>> {
     return this.client.send({ cmd: "create-room" }, { roomDto });
   }
-  
+
   @Get()
   @HttpCode(HttpStatus.OK)
   async getAllRooms(): Promise<Observable<any>> {
     return this.client.send({ cmd: "get-all-rooms" }, {});
   }
-  
+
   @Get("/room/:name")
   @HttpCode(HttpStatus.OK)
   async findRoomByName(@Req() req: Request): Promise<Observable<any>> {
-    return this.client.send({ cmd: "find-room-by-name" }, { req });
+    return this.client.send({ cmd: "find-room-by-name" }, { name: req.params.name });
   }
-  
+
   @Put("/room/:id")
   @HttpCode(HttpStatus.CREATED)
-  async updateRoom(@Req() req: Request, @Body() roomDto: Partial<RoomDto>): Promise<Observable<any>> {
-    return this.client.send({ cmd: "update-room" }, { req, roomDto });
+  async updateRoom(@Req() req: Request, @Headers() headers, @Body() roomDto: Partial<RoomDto>): Promise<Observable<any>> {
+    return this.client.send({ cmd: "update-room" }, { rights: headers["rights"], roomId: req.params.id, roomDto });
   }
-  
+
   @Delete("/room/:id")
   @HttpCode(HttpStatus.OK)
-  public async deleteRoom(@Req() req: Request): Promise<Observable<any>> {
-    return this.client.send({ cmd: "delete-room" }, { req });
+  public async deleteRoom(@Req() req: Request, @Headers() headers): Promise<Observable<any>> {
+    return this.client.send({ cmd: "delete-room" }, { rights: headers["rights"], roomId: req.params.id });
   }
-  
-  @Put("/message")
-  @HttpCode(HttpStatus.CREATED)
-  public async addMessageReferenceToRoom(
-    @Req() req: Request,
-    @Body() { messageId, roomId }: { messageId: string; roomId: string }
-  ): Promise<Observable<any>> {
-    return this.client.send({ cmd: "add-message-reference" }, { req, messageId, roomId });
-  }
-  
-  @Delete("/message")
-  @HttpCode(HttpStatus.OK)
-  public async deleteMessageReferenceFromRoom(
-    @Req() req: Request,
-    @Body() { messageId, roomId }: { messageId: string; roomId: string }
-  ): Promise<Observable<any>> {
-    return this.client.send({ cmd: "delete-message-reference" }, { req, messageId, roomId });
-  }
-  
+
   @Put("/user")
   @HttpCode(HttpStatus.CREATED)
-  public async addUserToRoom(
-    @Req() req: Request,
-    @Body() { userId, roomId }: { userId: string; roomId: string }
-  ): Promise<Observable<any>> {
-    return this.client.send({ cmd: "add-user" }, { req, userId, roomId });
+  public async addUserToRoom(@Query() query, @Headers() headers): Promise<Observable<any>> {
+    return this.client.send(
+      { cmd: "add-user" },
+      {
+        rights: headers["rights"],
+        userId: query.userId,
+        roomId: query.roomId
+      }
+    );
   }
-  
+
   @Delete("/user")
   @HttpCode(HttpStatus.OK)
-  public async deleteUserFromRoom(
-    @Req() req: Request,
-    @Body() { userId, roomId }: { userId: string; roomId: string }
-  ): Promise<Observable<any>> {
-    return this.client.send({ cmd: "delete-user" }, { req, userId, roomId });
+  public async deleteUserFromRoom(@Query() query, @Headers() headers): Promise<Observable<any>> {
+    return this.client.send(
+      { cmd: "delete-user" },
+      {
+        rights: headers["rights"],
+        userId: query.userId,
+        roomId: query.roomId
+      }
+    );
   }
 
   @Put("/user-rights")
   @HttpCode(HttpStatus.OK)
   public async changeUserRightsInRoom(
-    @Req() req: Request,
-    @Body() { userId, roomId, newRights }: { userId: string; roomId: string; newRights: string[] }
+    @Query() query,
+    @Headers() headers,
+    @Body() { newRights }: { newRights: string[] }
   ): Promise<Observable<any>> {
-    return this.client.send({ cmd: "change-user-rights" }, { req, userId, roomId, newRights });
+    return this.client.send(
+      { cmd: "change-user-rights" },
+      {
+        rights: headers["rights"],
+        userId: query.userId,
+        roomId: query.roomId,
+        newRights
+      }
+    );
   }
 }
