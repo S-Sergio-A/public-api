@@ -1,4 +1,4 @@
-import { PipeTransform, ArgumentMetadata, BadRequestException, Injectable, Inject } from '@nestjs/common';
+import { PipeTransform, ArgumentMetadata, BadRequestException, Injectable } from '@nestjs/common';
 import { ValidationException } from '../../exceptions/Validation.exception';
 import { ValidationService } from '../validation.service';
 
@@ -12,17 +12,13 @@ export class RoomValidationPipe implements PipeTransform {
     if (!metadata.metatype) {
       return value;
     }
-    // TODO
-    // const { errors, isValid } = await ValidationService.prototype.validateRoom(value);
+    
+    const { errors, isValid } = await ValidationService.prototype.validateRoom(value);
 
-    // if (isValid) {
-    //   return value;
-    // } else {
-    //   throw new ValidationException(errors);
-    // }
-  }
-
-  private _toValidate(metatype): boolean {
-    return typeof metatype === 'object';
+    if (isValid) {
+      return value;
+    } else {
+      throw new ValidationException(errors);
+    }
   }
 }

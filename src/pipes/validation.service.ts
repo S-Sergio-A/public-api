@@ -4,8 +4,8 @@ import { v4 } from "uuid";
 import { ValidationErrorCodes } from "../exceptions/errorCodes/ValidationErrorCodes";
 import { GlobalErrorCodes } from "../exceptions/errorCodes/GlobalErrorCodes";
 import { UserLoginEmailError, UserLoginPhoneNumberError, UserLoginUsernameError } from "./interfaces/log-in.error.interface";
-import { AddUpdateOptionalDataError } from "./interfaces/optional-data.error.interface";
 import { EmailSubscriptionError } from "./interfaces/email-subscription.error.interface";
+import { AddUpdateOptionalDataError } from "./interfaces/optional-data.error.interface";
 import { PasswordChangeError } from "./interfaces/password-change.error.interface";
 import { EmailChangeError } from "./interfaces/email-change.error.interface";
 import { ContactFormError } from "./interfaces/contact-form.error.interface";
@@ -13,6 +13,7 @@ import { PhoneChangeError } from "./interfaces/phone-change.error.interface";
 import { UsernameChangeError } from "./interfaces/username-change.interface";
 import { InternalFailure } from "./interfaces/internal-failure.interface";
 import { UserSignUpError } from "./interfaces/sign-up.error.interface";
+import { RoomError } from "./interfaces/room.error.interface";
 import { Subjects } from "./enums/contact-subjects";
 import { RulesEnum } from "./enums/rules.enum";
 
@@ -160,7 +161,11 @@ export class ValidationService {
       }
 
       if (await this._isEmpty(data.createdAt)) {
-        errors.createdAt = GlobalErrorCodes.EMPTY_ERROR.value;
+        const date = Date.now();
+        const localTime = new Date(date).toLocaleTimeString("ru-RU").substring(0, 5);
+        const localDate = new Date(date).toLocaleDateString("ru-RU");
+
+        data.createdAt = `${localTime} ${localDate}`;
       }
     } catch (err) {
       errors.internalFailure = err;
@@ -374,6 +379,48 @@ export class ValidationService {
     };
   }
 
+  async validateRoom(data) {
+    let errors: Partial<RoomError & InternalFailure> = {};
+
+    try {
+      data.id = v4();
+      data.membersCount = data.usersID ? data.usersID.length : 1;
+
+      if (await this._isEmpty(data.name)) {
+        errors.name = GlobalErrorCodes.EMPTY_ERROR.value;
+      }
+
+      if (await this._isEmpty(data.isUser)) {
+        errors.isUser = GlobalErrorCodes.EMPTY_ERROR.value;
+      }
+
+      if (await this._isEmpty(data.isPrivate)) {
+        if (data.isUser) {
+          data.isPrivate = true;
+        } else {
+          errors.isPrivate = GlobalErrorCodes.EMPTY_ERROR.value;
+        }
+      }
+
+      if (await this._isEmpty(data.createdAt)) {
+        const date = Date.now();
+        const localTime = new Date(date).toLocaleTimeString("ru-RU").substring(0, 5);
+        const localDate = new Date(date).toLocaleDateString("ru-RU");
+
+        data.createdAt = `${localTime} ${localDate}`;
+      }
+    } catch (err) {
+      errors.internalFailure = err;
+    }
+
+    console.log(errors);
+
+    return {
+      errors,
+      isValid: await this._isEmpty(errors)
+    };
+  }
+
   private async _isNameOrSurname(str) {
     return !!str.match(new RegExp(RulesEnum.FIRST_AND_LAST_NAME_WHITELIST_SYMBOLS));
   }
@@ -395,7 +442,7 @@ export class ValidationService {
   private async _isContainingOnlyWhitelistSymbols(str) {
     return !!str.match(new RegExp(RulesEnum.PASSWORD_WHITELIST_SYMBOLS));
   }
-  
+
   private async _isEmpty(obj) {
     if (obj !== undefined && obj !== null) {
       let isString = typeof obj === "string" || obj instanceof String;
