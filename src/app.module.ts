@@ -2,12 +2,12 @@ import { MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
-import { EntranceController } from "./entrance/entrance.controller";
-import { ValidationModule } from "./pipes/validation.module";
-import { EntranceModule } from "./entrance/entrance.module";
-import { AuthModule } from "./auth/auth.module";
-import { ClientAuthMiddleware } from "./middlewares/client.authentication.middleware";
 import { UserAuthenticationMiddleware } from "./middlewares/user.authentication.middleware";
+import { ClientAuthMiddleware } from "./middlewares/client.authentication.middleware";
+import { PublicController } from "./public/public.controller";
+import { ValidationModule } from "./pipes/validation.module";
+import { PublicModule } from "./public/public.module";
+import { AuthModule } from "./auth/auth.module";
 
 @Module({
   imports: [
@@ -18,10 +18,10 @@ import { UserAuthenticationMiddleware } from "./middlewares/user.authentication.
       ignoreUserAgents: [new RegExp("googlebot", "gi"), new RegExp("bingbot", "gi")]
     }),
     AuthModule,
-    EntranceModule,
+    PublicModule,
     ValidationModule
   ],
-  controllers: [EntranceController],
+  controllers: [PublicController],
   providers: [
     {
       provide: APP_GUARD,
@@ -36,11 +36,11 @@ export class AppModule {
       .forRoutes({ path: "client/contact", method: RequestMethod.ALL })
       .apply(UserAuthenticationMiddleware)
       .forRoutes(
-        { path: "/entrance/email/:id", method: RequestMethod.PUT },
-        { path: "/entrance/password/:id", method: RequestMethod.PUT },
-        { path: "/entrance/phone/:id", method: RequestMethod.PUT },
-        { path: "/entrance/optional/:id", method: RequestMethod.PUT },
-        { path: "/entrance/refresh-session", method: RequestMethod.GET }
+        { path: "/public/email", method: RequestMethod.PUT },
+        { path: "/public/password", method: RequestMethod.PUT },
+        { path: "/public/phone", method: RequestMethod.PUT },
+        { path: "/public/optional", method: RequestMethod.PUT },
+        { path: "/public/refresh-session", method: RequestMethod.GET }
       );
   }
 }
