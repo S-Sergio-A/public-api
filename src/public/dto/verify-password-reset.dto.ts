@@ -1,9 +1,9 @@
 import { IsDefined, IsNotEmpty, IsString, IsUUID, Length } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
-export class VerifyUuidDto {
+export class VerifyPasswordResetDto {
   @ApiProperty({
-    description: 'Verification code assigned to entrance when "forgot password" request received.',
+    description: 'Verification code assigned to public when "forgot password" request received.',
     format: "uuid",
     uniqueItems: true
   })
