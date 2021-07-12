@@ -1,18 +1,22 @@
 import { Injectable } from "@nestjs/common";
 import validator from "validator";
+import { v4 } from "uuid";
 import { ValidationErrorCodes } from "../exceptions/errorCodes/ValidationErrorCodes";
 import { GlobalErrorCodes } from "../exceptions/errorCodes/GlobalErrorCodes";
-import { UserLoginEmailError, UserLoginPhoneNumberError, UserLoginUsernameError } from "./interfaces/user-log-in.interface";
-import { AddUpdateOptionalDataError } from "./interfaces/add-update-optional-data.interface";
-import { EmailSubscriptionError } from "./interfaces/email-subscription.interface";
+import { UserLoginEmailError, UserLoginPhoneNumberError, UserLoginUsernameError } from "./interfaces/log-in.error.interface";
+import { AddUpdateOptionalDataError } from "./interfaces/optional-data.error.interface";
+import { EmailSubscriptionError } from "./interfaces/email-subscription.error.interface";
+import { PasswordChangeError } from "./interfaces/password-change.error.interface";
+import { EmailChangeError } from "./interfaces/email-change.error.interface";
+import { ContactFormError } from "./interfaces/contact-form.error.interface";
+import { PhoneChangeError } from "./interfaces/phone-change.error.interface";
+import { UsernameChangeError } from "./interfaces/username-change.interface";
 import { InternalFailure } from "./interfaces/internal-failure.interface";
-import { PasswordChangeError } from "./interfaces/password-change.interface";
-import { EmailChangeError } from "./interfaces/email-change.interface";
-import { ContactFormError } from "./interfaces/contact-form-error.interface";
-import { PhoneChangeError } from "./interfaces/phone-change.interface";
-import { UserSignUpError } from "./interfaces/user-sign-up.interface";
+import { UserSignUpError } from "./interfaces/sign-up.error.interface";
 import { Subjects } from "./enums/contact-subjects";
 import { RulesEnum } from "./enums/rules.enum";
+
+const ms = require("ms");
 
 @Injectable()
 export class ValidationService {
@@ -72,6 +76,17 @@ export class ValidationService {
       } else if (!validator.isMobilePhone(data.phoneNumber.replace(/\s/g, "").replace(/-/g, ""))) {
         errors.phoneNumber = ValidationErrorCodes.INVALID_CREATE_TEL_NUM.value;
       }
+
+      data.id = v4();
+      data.isActive = false;
+      data.firstName = "";
+      data.lastName = "";
+      data.birthday = "";
+      data.verification = v4();
+      data.verificationExpires = Date.now() + ms("4h");
+      data.loginAttempts = 0;
+      data.isBlocked = false;
+      data.blockExpires = 0;
     } catch (err) {
       errors.internalFailure = err;
     }
@@ -169,11 +184,49 @@ export class ValidationService {
 
       if (await this._isEmpty(data.newEmail)) {
         errors.newEmail = GlobalErrorCodes.EMPTY_ERROR.value;
+      } else if (data.newEmail === data.oldEmail) {
+        errors.newEmail = ValidationErrorCodes.EMAIL_MATCHES_WITH_THE_PREVIOUS.value;
       } else if (!validator.isEmail(data.newEmail)) {
         errors.newEmail = ValidationErrorCodes.INVALID_CREATE_EMAIL.value;
       } else if (!(await this._validateEmailLength(data.newEmail))) {
         errors.newEmail = ValidationErrorCodes.INVALID_CREATE_EMAIL_LENGTH.value;
       }
+
+      data.verification = v4();
+    } catch (err) {
+      errors.internalFailure = err;
+    }
+
+    console.log(errors);
+
+    return {
+      errors,
+      isValid: await this._isEmpty(errors)
+    };
+  }
+
+  async validateUsernameChange(data) {
+    let errors: Partial<UsernameChangeError & InternalFailure> = {};
+
+    try {
+      if (await this._isEmpty(data.oldUsername)) {
+        errors.oldUsername = GlobalErrorCodes.EMPTY_ERROR.value;
+      }
+
+      if (await this._isEmpty(data.newUsername)) {
+        errors.newUsername = GlobalErrorCodes.EMPTY_ERROR.value;
+      } else if (data.newUsername === data.oldUsername) {
+        errors.newUsername = ValidationErrorCodes.USERNAME_MATCHES_WITH_THE_PREVIOUS.value;
+      } else if (
+        !validator.isLength(data.newPhoneNumber, {
+          min: Number.parseInt(RulesEnum.USERNAME_MIN_LENGTH),
+          max: Number.parseInt(RulesEnum.USERNAME_MAX_LENGTH)
+        })
+      ) {
+        errors.newUsername = ValidationErrorCodes.INVALID_CREATE_USERNAME_LENGTH.value;
+      }
+
+      data.verification = v4();
     } catch (err) {
       errors.internalFailure = err;
     }
@@ -196,6 +249,8 @@ export class ValidationService {
 
       if (await this._isEmpty(data.newPhoneNumber)) {
         errors.newPhoneNumber = GlobalErrorCodes.EMPTY_ERROR.value;
+      } else if (data.newPhoneNumber === data.oldPhoneNumber) {
+        errors.newPhoneNumber = ValidationErrorCodes.PHONE_MATCHES_WITH_THE_PREVIOUS.value;
       } else if (
         !validator.isLength(data.newPhoneNumber, {
           min: Number.parseInt(RulesEnum.TEL_NUM_MIN_LENGTH),
@@ -206,6 +261,8 @@ export class ValidationService {
       } else if (!validator.isMobilePhone(data.newPhoneNumber.replace(/\s/g, "").replace(/-/g, ""))) {
         errors.newPhoneNumber = ValidationErrorCodes.INVALID_CREATE_TEL_NUM.value;
       }
+
+      data.verification = v4();
     } catch (err) {
       errors.internalFailure = err;
     }
@@ -228,6 +285,8 @@ export class ValidationService {
 
       if (await this._isEmpty(data.newPassword)) {
         errors.newPassword = GlobalErrorCodes.EMPTY_ERROR.value;
+      } else if (data.newPassword === data.oldPassword) {
+        errors.newPassword = ValidationErrorCodes.PASSWORD_MATCHES_WITH_THE_PREVIOUS.value;
       } else if (
         !validator.isLength(data.newPassword, {
           min: Number.parseInt(RulesEnum.PASSWORD_MIN_LENGTH),
@@ -240,6 +299,8 @@ export class ValidationService {
       } else if (await this._isContainingOnlyWhitelistSymbols(data.newPassword)) {
         errors.newPassword = ValidationErrorCodes.PASSWORD_RESTRICTED_CHARACTERS.value;
       }
+
+      data.verification = v4();
     } catch (err) {
       errors.internalFailure = err;
     }
@@ -262,13 +323,15 @@ export class ValidationService {
         } else if (!(await this._isNameOrSurname(data.firstName))) {
           errors.firstName = ValidationErrorCodes.INVALID_CREATE_FIRST_NAME.value;
         }
-      } else if (data.hasOwnProperty("lastName")) {
+      }
+      if (data.hasOwnProperty("lastName")) {
         if (await this._isEmpty(data.lastName)) {
           errors.lastName = GlobalErrorCodes.EMPTY_ERROR.value;
         } else if (!(await this._isNameOrSurname(data.lastName))) {
           errors.lastName = ValidationErrorCodes.INVALID_CREATE_LAST_NAME.value;
         }
-      } else if (data.hasOwnProperty("birthday")) {
+      }
+      if (data.hasOwnProperty("birthday")) {
         if (await this._isEmpty(data.birthday)) {
           errors.birthday = GlobalErrorCodes.EMPTY_ERROR.value;
         } else if (!validator.isDate(data.birthday)) {
@@ -332,7 +395,7 @@ export class ValidationService {
   private async _isContainingOnlyWhitelistSymbols(str) {
     return !!str.match(new RegExp(RulesEnum.PASSWORD_WHITELIST_SYMBOLS));
   }
-
+  
   private async _isEmpty(obj) {
     if (obj !== undefined && obj !== null) {
       let isString = typeof obj === "string" || obj instanceof String;
