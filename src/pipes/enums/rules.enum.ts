@@ -9,5 +9,5 @@ export enum RulesEnum {
   EMAIL_LOCAL_PART_MAX_LENGTH = "63",
   EMAIL_DOMAIN_PART_MAX_LENGTH = "190",
   FIRST_AND_LAST_NAME_WHITELIST_SYMBOLS = "^[a-zA-Zа-яА-ЯЁёҐґЄєІіЇїs-]{1,50}$",
-  PASSWORD_WHITELIST_SYMBOLS = "/^[dw%@?№$^]$/"
+  PASSWORD_WHITELIST_SYMBOLS = "/^[\\d\\w%@?№$^]*$/"
 }
