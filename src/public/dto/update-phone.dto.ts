@@ -1,7 +1,7 @@
-import { IsDefined, IsNotEmpty, IsOptional, IsPhoneNumber } from "class-validator";
+import { IsDefined, IsNotEmpty, IsOptional, IsPhoneNumber, IsUUID } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
-export class UserChangePhoneNumberDto {
+export class ChangePhoneNumberDto {
   @ApiProperty({
     example: "+380501224456, or +380 (050) 122-44-56.",
     description: "The old mobile phone number of the User.",
@@ -13,7 +13,7 @@ export class UserChangePhoneNumberDto {
   @IsNotEmpty()
   @IsPhoneNumber()
   @IsOptional()
-  oldPhoneNumber: string;
+  readonly oldPhoneNumber: string;
 
   @ApiProperty({
     example: "+380501224456, or +380 (050) 122-44-56.",
@@ -26,5 +26,14 @@ export class UserChangePhoneNumberDto {
   @IsNotEmpty()
   @IsPhoneNumber()
   @IsOptional()
-  newPhoneNumber: string;
+  readonly newPhoneNumber: string;
+
+  @ApiProperty({
+    description: 'Verification code sent to the User.',
+    format: "uuid",
+    uniqueItems: true
+  })
+  @IsNotEmpty()
+  @IsUUID()
+  verification: string;
 }
