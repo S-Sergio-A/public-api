@@ -36,6 +36,10 @@ export class AppModule {
       .forRoutes({ path: "client/contact", method: RequestMethod.ALL })
       .apply(UserAuthenticationMiddleware)
       .forRoutes(
+        { path: "/public/logout", method: RequestMethod.GET },
+        { path: "/public/verify-change", method: RequestMethod.POST },
+        { path: "/public/create-room", method: RequestMethod.POST },
+        { path: "/public/user-rooms", method: RequestMethod.GET },
         { path: "/public/email", method: RequestMethod.PUT },
         { path: "/public/password", method: RequestMethod.PUT },
         { path: "/public/phone", method: RequestMethod.PUT },
