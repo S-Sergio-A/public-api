@@ -6,6 +6,7 @@ import { Observable } from "rxjs";
 import { RequestBodyAndInternalExceptionFilter } from "../exceptions/filters/RequestBodyAndInternal.exception-filter";
 import { ChangePhoneNumberValidationPipe } from "../pipes/validation/changePhoneNumber.validation.pipe";
 import { ChangePasswordValidationPipe } from "../pipes/validation/changePassword.validation.pipe";
+import { ChangeUsernameValidationPipe } from "../pipes/validation/changeUsername.validation.pipe";
 import { ValidationExceptionFilter } from "../exceptions/filters/Validation.exception-filter";
 import { RegistrationValidationPipe } from "../pipes/validation/registration.validation.pipe";
 import { OptionalDataValidationPipe } from "../pipes/validation/optionalData.validation.pipe";
@@ -15,16 +16,15 @@ import { LoginValidationPipe } from "../pipes/validation/login.validation.pipe";
 import { RoomValidationPipe } from "../pipes/validation/room.validation.pipe";
 import { LoginByEmailDto, LoginByPhoneNumberDto, LoginByUsernameDto } from "./dto/login.dto";
 import { AddOrUpdateOptionalDataDto } from "./dto/add-or-update-optional-data.dto";
+import { VerifyPasswordResetDto } from "./dto/verify-password-reset.dto";
 import { ChangePhoneNumberDto } from "./dto/update-phone.dto";
 import { ChangePasswordDto } from "./dto/update-password.dto";
 import { ForgotPasswordDto } from "./dto/forgot-password.dto";
+import { ChangeUsernameDto } from "./dto/update-username.dto";
 import { ChangeEmailDto } from "./dto/update-email.dto";
 import { ContactFormDto } from "./dto/contact-form.dto";
-import { VerifyPasswordResetDto } from "./dto/verify-password-reset.dto";
 import { SignUpDto } from "./dto/sign-up.dto";
 import { RoomDto } from "./dto/room.dto";
-import { ChangeUsernameValidationPipe } from "../pipes/validation/changeUsername.validation.pipe";
-import { ChangeUsernameDto } from "./dto/update-username.dto";
 
 @UseFilters(new RequestBodyAndInternalExceptionFilter(), new ValidationExceptionFilter())
 @Controller("public")
@@ -253,7 +253,7 @@ export class PublicController {
   @ApiOperation({ summary: "Handle an appeal." })
   @ApiCreatedResponse({})
   async contact(@Body(new ContactFormValidationPipe()) contactFormDto: ContactFormDto): Promise<Observable<any>> {
-    return this.client.send({ cmd: "handle-appeal" }, { contactFormDto });
+    return this.client.send({ cmd: "handle-appeal" }, contactFormDto);
   }
 
   @Get("/token")
@@ -278,11 +278,11 @@ export class PublicController {
   async getAllRooms(): Promise<Observable<any>> {
     return this.client.send({ cmd: "get-all-rooms" }, {});
   }
-  
+
   @Get("/user-rooms")
   @HttpCode(HttpStatus.OK)
   async getAllUserRooms(@Req() req): Promise<Observable<any>> {
-    return this.client.send({ cmd: "get-all-user-rooms" }, { userId: req.user.userId});
+    return this.client.send({ cmd: "get-all-user-rooms" }, { userId: req.user.userId });
   }
 
   @Get("/room/:name")
@@ -291,10 +291,10 @@ export class PublicController {
     return this.client.send({ cmd: "find-room-by-name" }, { name: req.params.name });
   }
 
-  @Put("/room/:id")
+  @Put("/room")
   @HttpCode(HttpStatus.CREATED)
-  async updateRoom(@Req() req: Request, @Headers() headers, @Body() roomDto: Partial<RoomDto>): Promise<Observable<any>> {
-    return this.client.send({ cmd: "update-room" }, { rights: headers["rights"], roomId: req.params.id, roomDto });
+  async updateRoom(@Query() query, @Headers() headers, @Body() roomDto: Partial<RoomDto>): Promise<Observable<any>> {
+    return this.client.send({ cmd: "update-room" }, { rights: headers["rights"], roomId: query.roomId, roomDto });
   }
 
   @Delete("/room/:id")
