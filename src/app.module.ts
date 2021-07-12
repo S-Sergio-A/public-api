@@ -13,8 +13,8 @@ import { AuthModule } from "./auth/auth.module";
   imports: [
     ConfigModule.forRoot(),
     ThrottlerModule.forRoot({
-      ttl: 1000,
-      limit: 40,
+      ttl: 120,
+      limit: 200,
       ignoreUserAgents: [new RegExp("googlebot", "gi"), new RegExp("bingbot", "gi")]
     }),
     AuthModule,
