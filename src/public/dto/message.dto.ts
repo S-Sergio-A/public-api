@@ -1,4 +1,4 @@
-import { IsDefined, IsNotEmpty, IsString, IsUUID, Length } from "class-validator";
+import { IsDefined, IsNotEmpty, IsString } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class MessageDto {
@@ -34,7 +34,7 @@ export class MessageDto {
 
   @ApiProperty({
     example: "Я продаю лучшие хергитские гобелены. Не желаете взглянуть?",
-    description: "The entrance's message.",
+    description: "The public's message.",
     format: "string"
   })
   @IsDefined()
@@ -54,7 +54,7 @@ export class MessageDto {
 
   @ApiProperty({
     example: "13f4fpp9",
-    description: "ID of the entrance.",
+    description: "ID of the public.",
     format: "string"
   })
   @IsDefined()

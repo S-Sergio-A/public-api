@@ -1,23 +1,23 @@
 import { IsDefined, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, Length } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
-export class ContactFormDto {
+export class SignUpDto {
   @ApiProperty({
     example: "3dbdf9a931689e5f727c55694718afa8",
-    description: "The ID of the Client.",
+    description: "The ID of the User.",
     format: "string",
-    minLength: 36,
-    maxLength: 36
+    minLength: 32,
+    maxLength: 32
   })
   @IsDefined()
   @IsNotEmpty()
   @IsString()
-  @Length(36, 36)
+  @Length(32, 32)
   id: string;
 
   @ApiProperty({
     example: "petroshrekovenko@gmail.com",
-    description: "The email of the Client.",
+    description: "The email of the User.",
     format: "email",
     uniqueItems: true,
     minLength: 6,
@@ -27,24 +27,24 @@ export class ContactFormDto {
   @IsNotEmpty()
   @IsEmail()
   @Length(6, 254)
-  readonly clientEmail: string;
+  readonly email: string;
 
   @ApiProperty({
-    example: "Petro Shrekovenko.",
-    description: "The full name of the Client.",
+    example: "PetroShrekovenko.",
+    description: "The username of the User.",
     format: "string",
-    minLength: 2,
-    maxLength: 100
+    minLength: 4,
+    maxLength: 30
   })
   @IsDefined()
   @IsNotEmpty()
   @IsString()
-  @Length(2, 100)
-  readonly clientFullName: string;
+  @Length(4, 30)
+  readonly username: string;
 
   @ApiProperty({
-    example: "Careers | PR | Support.",
-    description: "The subject of the appeal.",
+    example: "Secret password.",
+    description: "The password of the User.",
     format: "string",
     minLength: 8,
     maxLength: 200
@@ -53,10 +53,11 @@ export class ContactFormDto {
   @IsNotEmpty()
   @IsString()
   @Length(8, 200)
-  readonly subject: string;
+  password: string;
 
   @ApiProperty({
-    description: "The message of the Client.",
+    example: "Secret password.",
+    description: "The password verification of the User.",
     format: "string",
     minLength: 8,
     maxLength: 200
@@ -64,6 +65,19 @@ export class ContactFormDto {
   @IsDefined()
   @IsNotEmpty()
   @IsString()
-  @Length(1, 2000)
-  readonly message: string;
+  @Length(8, 200)
+  passwordVerification: string;
+
+  @ApiProperty({
+    example: "+380501224456",
+    description: "The mobile phone number of the User.",
+    format: "string",
+    minLength: 12,
+    maxLength: 20
+  })
+  @IsDefined()
+  @IsNotEmpty()
+  @IsPhoneNumber()
+  @IsOptional()
+  phoneNumber: string;
 }

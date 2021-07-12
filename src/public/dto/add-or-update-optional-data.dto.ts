@@ -1,4 +1,4 @@
-import { IsDate, IsDefined, IsNotEmpty, IsOptional, IsPhoneNumber, IsString } from "class-validator";
+import { IsDate, IsOptional, IsString } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class AddOrUpdateOptionalDataDto {
@@ -9,8 +9,6 @@ export class AddOrUpdateOptionalDataDto {
     minLength: 1,
     maxLength: 50
   })
-  @IsDefined()
-  @IsNotEmpty()
   @IsString()
   @IsOptional()
   firstName: string;
@@ -22,8 +20,6 @@ export class AddOrUpdateOptionalDataDto {
     minLength: 1,
     maxLength: 50
   })
-  @IsDefined()
-  @IsNotEmpty()
   @IsString()
   @IsOptional()
   lastName: string;
@@ -35,8 +31,6 @@ export class AddOrUpdateOptionalDataDto {
     minLength: 10,
     maxLength: 10
   })
-  @IsDefined()
-  @IsNotEmpty()
   @IsDate()
   @IsOptional()
   birthday: string;
