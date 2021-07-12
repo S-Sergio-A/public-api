@@ -50,6 +50,14 @@ export class PublicController {
     return this.client.send({ cmd: "register" }, createUserDto);
   }
 
+  @Put("/verify-registration")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Verify registration." })
+  @ApiOkResponse({})
+  async verifyRegistration(@Query() query): Promise<Observable<any>> {
+    return this.client.send({ cmd: "verify-registration" }, { userId: query.userId, verification: query.verification });
+  }
+
   @Post("/login")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Log in the public." })
@@ -90,8 +98,8 @@ export class PublicController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Verify a password reset operation and create a new password." })
   @ApiOkResponse({})
-  async verifyPasswordReset(@Req() req: Request, @Body() verifyPasswordResetDto: VerifyPasswordResetDto): Promise<Observable<any>> {
-    return this.client.send({ cmd: "verify-password-reset" }, { userId: req.user.userId, verifyPasswordResetDto });
+  async verifyPasswordReset(@Query() query, @Body() verifyPasswordResetDto: VerifyPasswordResetDto): Promise<Observable<any>> {
+    return this.client.send({ cmd: "verify-password-reset" }, { email: query.email, verifyPasswordResetDto });
   }
 
   @Get("/logout")
@@ -261,14 +269,20 @@ export class PublicController {
 
   @Post("/create-room")
   @HttpCode(HttpStatus.CREATED)
-  async createRoom(@Body(new RoomValidationPipe()) roomDto: RoomDto): Promise<Observable<any>> {
-    return this.client.send({ cmd: "create-room" }, { roomDto });
+  async createRoom(@Req() req, @Body(new RoomValidationPipe()) roomDto: RoomDto): Promise<Observable<any>> {
+    return this.client.send({ cmd: "create-room" }, { roomDto, userId: req.user.userId });
   }
 
-  @Get()
+  @Get("/rooms")
   @HttpCode(HttpStatus.OK)
   async getAllRooms(): Promise<Observable<any>> {
     return this.client.send({ cmd: "get-all-rooms" }, {});
+  }
+  
+  @Get("/user-rooms")
+  @HttpCode(HttpStatus.OK)
+  async getAllUserRooms(@Req() req): Promise<Observable<any>> {
+    return this.client.send({ cmd: "get-all-user-rooms" }, { userId: req.user.userId});
   }
 
   @Get("/room/:name")
