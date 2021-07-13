@@ -1,1 +1,2 @@
-web: npm run build && node dist/main
+heroku ps:scale web=0
+heroku ps:scale worker=1
