@@ -385,6 +385,12 @@ export class PublicController {
     const fingerprint = headers["fingerprint"];
     const userAgent = headers["user-agent"];
     const ip = req.socket.remoteAddress;
-    return !!fingerprint && !!userAgent && !!ip && (validateId ? !!userId : true);
+    if (!!fingerprint && !!userAgent && !!ip) {
+      if (validateId) {
+        return !!userId;
+      }
+      return true;
+    }
+    return false;
   }
 }
