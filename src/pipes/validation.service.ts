@@ -88,8 +88,9 @@ export class ValidationService {
       data.loginAttempts = 0;
       data.isBlocked = false;
       data.blockExpires = 0;
-    } catch (err) {
-      errors.internalFailure = err;
+    } catch (e) {
+      console.log(e);
+      errors.internalFailure = e;
     }
 
     console.log(errors);
@@ -121,8 +122,9 @@ export class ValidationService {
       if (await this._isEmpty(data.password)) {
         errors.password = GlobalErrorCodes.EMPTY_ERROR.value;
       }
-    } catch (err) {
-      errors.internalFailure = err;
+    } catch (e) {
+      console.log(e);
+      errors.internalFailure = e;
     }
 
     console.log(errors);
@@ -167,8 +169,9 @@ export class ValidationService {
 
         data.createdAt = `${localTime} ${localDate}`;
       }
-    } catch (err) {
-      errors.internalFailure = err;
+    } catch (e) {
+      console.log(e);
+      errors.internalFailure = e;
     }
 
     console.log(errors);
@@ -198,8 +201,9 @@ export class ValidationService {
       }
 
       data.verification = v4();
-    } catch (err) {
-      errors.internalFailure = err;
+    } catch (e) {
+      console.log(e);
+      errors.internalFailure = e;
     }
 
     console.log(errors);
@@ -223,7 +227,7 @@ export class ValidationService {
       } else if (data.newUsername === data.oldUsername) {
         errors.newUsername = ValidationErrorCodes.USERNAME_MATCHES_WITH_THE_PREVIOUS.value;
       } else if (
-        !validator.isLength(data.newPhoneNumber, {
+        !validator.isLength(data.newUsername, {
           min: Number.parseInt(RulesEnum.USERNAME_MIN_LENGTH),
           max: Number.parseInt(RulesEnum.USERNAME_MAX_LENGTH)
         })
@@ -232,8 +236,9 @@ export class ValidationService {
       }
 
       data.verification = v4();
-    } catch (err) {
-      errors.internalFailure = err;
+    } catch (e) {
+      console.log(e);
+      errors.internalFailure = e;
     }
 
     console.log(errors);
@@ -268,8 +273,9 @@ export class ValidationService {
       }
 
       data.verification = v4();
-    } catch (err) {
-      errors.internalFailure = err;
+    } catch (e) {
+      console.log(e);
+      errors.internalFailure = e;
     }
 
     console.log(errors);
@@ -306,8 +312,9 @@ export class ValidationService {
       }
 
       data.verification = v4();
-    } catch (err) {
-      errors.internalFailure = err;
+    } catch (e) {
+      console.log(e);
+      errors.internalFailure = e;
     }
 
     console.log(errors);
@@ -343,9 +350,9 @@ export class ValidationService {
           errors.birthday = ValidationErrorCodes.INVALID_CREATE_BIRTHDAY.value;
         }
       }
-    } catch (err) {
-      console.log(err);
-      errors.internalFailure = err;
+    } catch (e) {
+      console.log(e);
+      errors.internalFailure = e;
     }
 
     console.log(errors);
@@ -367,8 +374,9 @@ export class ValidationService {
       } else if (!(await this._validateEmailLength(email))) {
         errors.email = ValidationErrorCodes.INVALID_CREATE_EMAIL_LENGTH.value;
       }
-    } catch (err) {
-      errors.internalFailure = err;
+    } catch (e) {
+      console.log(e);
+      errors.internalFailure = e;
     }
 
     console.log(errors);
@@ -409,8 +417,9 @@ export class ValidationService {
 
         data.createdAt = `${localTime} ${localDate}`;
       }
-    } catch (err) {
-      errors.internalFailure = err;
+    } catch (e) {
+      console.log(e);
+      errors.internalFailure = e;
     }
 
     console.log(errors);
