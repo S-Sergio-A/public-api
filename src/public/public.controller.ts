@@ -381,7 +381,7 @@ export class PublicController {
   }
 
   private async validateRequestAndHeaders(req: Request, headers: any, validateId: boolean = true) {
-    const userId = req.user.userId;
+    const userId = req.user?.userId;
     const fingerprint = headers["fingerprint"];
     const userAgent = headers["user-agent"];
     const ip = req.socket.remoteAddress;
