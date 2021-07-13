@@ -67,38 +67,47 @@ export class PublicController {
     @Headers() headers,
     @Body(new LoginValidationPipe()) loginUserDto: LoginByEmailDto & LoginByUsernameDto & LoginByPhoneNumberDto
   ): Promise<Observable<any>> {
-    return this.client.send(
-      { cmd: "login" },
-      {
-        ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"],
-        loginUserDto
-      }
-    );
+    if (await this.validateRequestAndHeaders(req, headers)) {
+      return this.client.send(
+        { cmd: "login" },
+        {
+          ip: req.socket.remoteAddress,
+          userAgent: headers["user-agent"],
+          fingerprint: headers["fingerprint"],
+          loginUserDto
+        }
+      );
+    }
   }
 
   @Post("/reset-password")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Request resetting for a forgotten password." })
   @ApiOkResponse({})
-  async resetPassword(@Req() req: Request, @Headers() headers, @Body() forgotPasswordDto: ForgotPasswordDto): Promise<Observable<any>> {
-    return this.client.send(
-      { cmd: "reset-password" },
-      {
-        ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"],
-        forgotPasswordDto
-      }
-    );
+  async resetPassword(
+    @Req() req: Request,
+    @Headers() headers,
+    @Body() forgotPasswordDto: ForgotPasswordDto
+  ): Promise<Observable<any> | HttpStatus> {
+    if (await this.validateRequestAndHeaders(req, headers)) {
+      return this.client.send(
+        { cmd: "reset-password" },
+        {
+          ip: req.socket.remoteAddress,
+          userAgent: headers["user-agent"],
+          fingerprint: headers["fingerprint"],
+          forgotPasswordDto
+        }
+      );
+    }
+    return HttpStatus.BAD_REQUEST;
   }
 
   @Put("/verify-password-reset")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Verify a password reset operation and create a new password." })
   @ApiOkResponse({})
-  async verifyPasswordReset(@Query() query, @Body() verifyPasswordResetDto: VerifyPasswordResetDto): Promise<Observable<any>> {
+  async verifyPasswordReset(@Query() query, @Body() verifyPasswordResetDto: VerifyPasswordResetDto): Promise<Observable<any> | HttpStatus> {
     return this.client.send({ cmd: "verify-password-reset" }, { email: query.email, verifyPasswordResetDto });
   }
 
@@ -106,18 +115,21 @@ export class PublicController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Verify a password reset operation and create a new password." })
   @ApiOkResponse({})
-  async logout(@Req() req: Request, @Headers() headers): Promise<Observable<any>> {
-    return this.client.send(
-      { cmd: "logout" },
-      {
-        accessToken: headers["access-token"],
-        ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"],
-        refreshToken: headers["refresh-token"],
-        userId: req.user.userId
-      }
-    );
+  async logout(@Req() req: Request, @Headers() headers): Promise<Observable<any> | HttpStatus> {
+    if (await this.validateRequestAndHeaders(req, headers)) {
+      return this.client.send(
+        { cmd: "logout" },
+        {
+          accessToken: headers["access-token"],
+          ip: req.socket.remoteAddress,
+          userAgent: headers["user-agent"],
+          fingerprint: headers["fingerprint"],
+          refreshToken: headers["refresh-token"],
+          userId: req.user.userId
+        }
+      );
+    }
+    return HttpStatus.BAD_REQUEST;
   }
 
   @Put("/email")
@@ -128,17 +140,20 @@ export class PublicController {
     @Req() req: Request,
     @Headers() headers,
     @Body(new ChangeEmailValidationPipe()) changeEmailDto: ChangeEmailDto
-  ): Promise<Observable<any>> {
-    return this.client.send(
-      { cmd: "change-email" },
-      {
-        userId: req.user.userId,
-        ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"],
-        changeEmailDto
-      }
-    );
+  ): Promise<Observable<any> | HttpStatus> {
+    if (await this.validateRequestAndHeaders(req, headers)) {
+      return this.client.send(
+        { cmd: "change-email" },
+        {
+          userId: req.user.userId,
+          ip: req.socket.remoteAddress,
+          userAgent: headers["user-agent"],
+          fingerprint: headers["fingerprint"],
+          changeEmailDto
+        }
+      );
+    }
+    return HttpStatus.BAD_REQUEST;
   }
 
   @Put("/username")
@@ -149,17 +164,21 @@ export class PublicController {
     @Req() req: Request,
     @Headers() headers,
     @Body(new ChangeUsernameValidationPipe()) changeUsernameDto: ChangeUsernameDto
-  ): Promise<Observable<any>> {
-    return this.client.send(
-      { cmd: "change-username" },
-      {
-        userId: req.user.userId,
-        ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"],
-        changeUsernameDto
-      }
-    );
+  ): Promise<Observable<any> | HttpStatus> {
+    if (await this.validateRequestAndHeaders(req, headers)) {
+      return this.client.send(
+        { cmd: "change-username" },
+        {
+          userId: req.user.userId,
+          ip: req.socket.remoteAddress,
+          userAgent: headers["user-agent"],
+          fingerprint: headers["fingerprint"],
+          changeUsernameDto
+        }
+      );
+    }
+
+    return HttpStatus.BAD_REQUEST;
   }
 
   @Put("/phone")
@@ -170,17 +189,22 @@ export class PublicController {
     @Req() req: Request,
     @Headers() headers,
     @Body(new ChangePhoneNumberValidationPipe()) changePhoneNumberDto: ChangePhoneNumberDto
-  ): Promise<Observable<any>> {
-    return this.client.send(
-      { cmd: "change-phone" },
-      {
-        userId: req.user.userId,
-        ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"],
-        changePhoneNumberDto
-      }
-    );
+  ): Promise<Observable<any> | HttpStatus> {
+    if (await this.validateRequestAndHeaders(req, headers)) {
+      await this.validateRequestAndHeaders(req, headers);
+
+      return this.client.send(
+        { cmd: "change-phone" },
+        {
+          userId: req.user.userId,
+          ip: req.socket.remoteAddress,
+          userAgent: headers["user-agent"],
+          fingerprint: headers["fingerprint"],
+          changePhoneNumberDto
+        }
+      );
+    }
+    return HttpStatus.BAD_REQUEST;
   }
 
   @Put("/password")
@@ -191,17 +215,22 @@ export class PublicController {
     @Req() req: Request,
     @Headers() headers,
     @Body(new ChangePasswordValidationPipe()) changePasswordDto: ChangePasswordDto
-  ): Promise<Observable<any>> {
-    return this.client.send(
-      { cmd: "change-password" },
-      {
-        userId: req.user.userId,
-        ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"],
-        changePasswordDto
-      }
-    );
+  ): Promise<Observable<any> | HttpStatus> {
+    if (await this.validateRequestAndHeaders(req, headers)) {
+      await this.validateRequestAndHeaders(req, headers);
+
+      return this.client.send(
+        { cmd: "change-password" },
+        {
+          userId: req.user.userId,
+          ip: req.socket.remoteAddress,
+          userAgent: headers["user-agent"],
+          fingerprint: headers["fingerprint"],
+          changePasswordDto
+        }
+      );
+    }
+    return HttpStatus.BAD_REQUEST;
   }
 
   @Post("/verify-change")
@@ -234,18 +263,22 @@ export class PublicController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Refresh the public session." })
   @ApiCreatedResponse({})
-  async refreshAccessToken(@Req() req: Request, @Headers() headers): Promise<Observable<any>> {
-    return this.client.send(
-      { cmd: "refresh-session" },
-      {
-        accessToken: headers["access-token"],
-        ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"],
-        refreshToken: headers["refresh-token"],
-        userId: req.user.userId
-      }
-    );
+  async refreshAccessToken(@Req() req: Request, @Headers() headers): Promise<Observable<any> | HttpStatus> {
+    if (await this.validateRequestAndHeaders(req, headers)) {
+      return this.client.send(
+        { cmd: "refresh-session" },
+        {
+          accessToken: headers["access-token"],
+          ip: req.socket.remoteAddress,
+          userAgent: headers["user-agent"],
+          fingerprint: headers["fingerprint"],
+          refreshToken: headers["refresh-token"],
+          userId: req.user.userId
+        }
+      );
+    }
+
+    return HttpStatus.BAD_REQUEST;
   }
 
   @Post("/contact")
@@ -260,11 +293,15 @@ export class PublicController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Generate a client access-token." })
   @ApiCreatedResponse({})
-  async generateToken(@Req() req: Request, @Headers() headers): Promise<Observable<any>> {
-    return this.client.send(
-      { cmd: "generate-client-token" },
-      { ip: req.socket.remoteAddress, userAgent: headers["user-agent"], fingerprint: headers["fingerprint"] }
-    );
+  async generateToken(@Req() req: Request, @Headers() headers): Promise<Observable<any> | HttpStatus> {
+    if (await this.validateRequestAndHeaders(req, headers)) {
+      return this.client.send(
+        { cmd: "generate-client-token" },
+        { ip: req.socket.remoteAddress, userAgent: headers["user-agent"], fingerprint: headers["fingerprint"] }
+      );
+    }
+
+    return HttpStatus.BAD_REQUEST;
   }
 
   @Post("/create-room")
@@ -345,5 +382,13 @@ export class PublicController {
         newRights
       }
     );
+  }
+
+  private async validateRequestAndHeaders(req: Request, headers: any, validateId: boolean = true) {
+    const userId = req.user.userId;
+    const fingerprint = headers["fingerprint"];
+    const userAgent = headers["user-agent"];
+    const ip = req.socket.remoteAddress;
+    return !!fingerprint && !!userAgent && !!ip && validateId && !!userId;
   }
 }
