@@ -67,7 +67,7 @@ export class PublicController {
     @Headers() headers,
     @Body(new LoginValidationPipe()) loginUserDto: LoginByEmailDto & LoginByUsernameDto & LoginByPhoneNumberDto
   ): Promise<Observable<any>> {
-    if (await this.validateRequestAndHeaders(req, headers)) {
+    if (await this.validateRequestAndHeaders(req, headers, false)) {
       return this.client.send(
         { cmd: "login" },
         {
@@ -89,7 +89,7 @@ export class PublicController {
     @Headers() headers,
     @Body() forgotPasswordDto: ForgotPasswordDto
   ): Promise<Observable<any> | HttpStatus> {
-    if (await this.validateRequestAndHeaders(req, headers)) {
+    if (await this.validateRequestAndHeaders(req, headers, false)) {
       return this.client.send(
         { cmd: "reset-password" },
         {
@@ -191,7 +191,6 @@ export class PublicController {
     @Body(new ChangePhoneNumberValidationPipe()) changePhoneNumberDto: ChangePhoneNumberDto
   ): Promise<Observable<any> | HttpStatus> {
     if (await this.validateRequestAndHeaders(req, headers)) {
-      await this.validateRequestAndHeaders(req, headers);
 
       return this.client.send(
         { cmd: "change-phone" },
@@ -217,7 +216,6 @@ export class PublicController {
     @Body(new ChangePasswordValidationPipe()) changePasswordDto: ChangePasswordDto
   ): Promise<Observable<any> | HttpStatus> {
     if (await this.validateRequestAndHeaders(req, headers)) {
-      await this.validateRequestAndHeaders(req, headers);
 
       return this.client.send(
         { cmd: "change-password" },
@@ -294,7 +292,7 @@ export class PublicController {
   @ApiOperation({ summary: "Generate a client access-token." })
   @ApiCreatedResponse({})
   async generateToken(@Req() req: Request, @Headers() headers): Promise<Observable<any> | HttpStatus> {
-    if (await this.validateRequestAndHeaders(req, headers)) {
+    if (await this.validateRequestAndHeaders(req, headers, false)) {
       return this.client.send(
         { cmd: "generate-client-token" },
         { ip: req.socket.remoteAddress, userAgent: headers["user-agent"], fingerprint: headers["fingerprint"] }
