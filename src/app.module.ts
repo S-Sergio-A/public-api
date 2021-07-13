@@ -41,6 +41,7 @@ export class AppModule {
         { path: "/public/create-room", method: RequestMethod.POST },
         { path: "/public/user-rooms", method: RequestMethod.GET },
         { path: "/public/email", method: RequestMethod.PUT },
+        { path: "/public/username", method: RequestMethod.PUT },
         { path: "/public/password", method: RequestMethod.PUT },
         { path: "/public/phone", method: RequestMethod.PUT },
         { path: "/public/optional", method: RequestMethod.PUT },
