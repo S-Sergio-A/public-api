@@ -191,7 +191,6 @@ export class PublicController {
     @Body(new ChangePhoneNumberValidationPipe()) changePhoneNumberDto: ChangePhoneNumberDto
   ): Promise<Observable<any> | HttpStatus> {
     if (await this.validateRequestAndHeaders(req, headers)) {
-
       return this.client.send(
         { cmd: "change-phone" },
         {
@@ -216,7 +215,6 @@ export class PublicController {
     @Body(new ChangePasswordValidationPipe()) changePasswordDto: ChangePasswordDto
   ): Promise<Observable<any> | HttpStatus> {
     if (await this.validateRequestAndHeaders(req, headers)) {
-
       return this.client.send(
         { cmd: "change-password" },
         {
@@ -387,6 +385,6 @@ export class PublicController {
     const fingerprint = headers["fingerprint"];
     const userAgent = headers["user-agent"];
     const ip = req.socket.remoteAddress;
-    return !!fingerprint && !!userAgent && !!ip && validateId && !!userId;
+    return !!fingerprint && !!userAgent && !!ip && (validateId ? !!userId : true);
   }
 }
