@@ -65,7 +65,7 @@ export class PublicController {
   async login(
     @Req() req: Request,
     @Headers() headers,
-    @Body(new LoginValidationPipe()) loginUserDto: LoginByEmailDto & LoginByUsernameDto & LoginByPhoneNumberDto
+    @Body(new LoginValidationPipe()) loginUserDto: LoginByEmailDto & LoginByUsernameDto & LoginByPhoneNumberDto & { rememberMe: boolean }
   ): Promise<Observable<any>> {
     if (await this.validateRequestAndHeaders(req, headers, false)) {
       return this.client.send(
