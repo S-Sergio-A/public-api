@@ -78,7 +78,6 @@ export class ValidationService {
         errors.phoneNumber = ValidationErrorCodes.INVALID_CREATE_TEL_NUM.value;
       }
 
-      data.id = v4();
       data.isActive = false;
       data.firstName = "";
       data.lastName = "";
@@ -391,7 +390,6 @@ export class ValidationService {
     let errors: Partial<RoomError & InternalFailure> = {};
 
     try {
-      data.id = v4();
       data.membersCount = data.usersID ? data.usersID.length : 1;
 
       if (await this._isEmpty(data.name)) {
