@@ -3,19 +3,6 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class ContactFormDto {
   @ApiProperty({
-    example: "3dbdf9a931689e5f727c55694718afa8",
-    description: "The ID of the Client.",
-    format: "string",
-    minLength: 36,
-    maxLength: 36
-  })
-  @IsDefined()
-  @IsNotEmpty()
-  @IsString()
-  @Length(36, 36)
-  id: string;
-
-  @ApiProperty({
     example: "petroshrekovenko@gmail.com",
     description: "The email of the Client.",
     format: "email",

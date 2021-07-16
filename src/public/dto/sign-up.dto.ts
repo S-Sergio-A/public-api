@@ -3,19 +3,6 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class SignUpDto {
   @ApiProperty({
-    example: "3dbdf9a931689e5f727c55694718afa8",
-    description: "The ID of the User.",
-    format: "string",
-    minLength: 32,
-    maxLength: 32
-  })
-  @IsDefined()
-  @IsNotEmpty()
-  @IsString()
-  @Length(32, 32)
-  id: string;
-
-  @ApiProperty({
     example: "petroshrekovenko@gmail.com",
     description: "The email of the User.",
     format: "email",

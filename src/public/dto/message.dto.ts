@@ -3,16 +3,6 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class MessageDto {
   @ApiProperty({
-    example: "13f4fwe4",
-    description: "ID of the message.",
-    format: "string"
-  })
-  @IsDefined()
-  @IsNotEmpty()
-  @IsString()
-  id: string;
-
-  @ApiProperty({
     example: "af5d7dd9",
     description: "ID of the messages where the message was sent.",
     format: "string"
@@ -60,5 +50,5 @@ export class MessageDto {
   @IsDefined()
   @IsNotEmpty()
   @IsString()
-  userId: string;
+  user: string;
 }
