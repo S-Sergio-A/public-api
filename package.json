@@ -21,25 +21,27 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs/cli": "^7.6.0",
     "@nestjs/common": "^7.6.17",
     "@nestjs/config": "^0.6.3",
     "@nestjs/core": "^7.6.17",
     "@nestjs/microservices": "^8.0.1",
+    "@nestjs/mongoose": "^8.0.0",
     "@nestjs/platform-express": "^7.6.17",
+    "@nestjs/schematics": "^7.3.1",
     "@nestjs/swagger": "^4.8.2",
     "@nestjs/throttler": "^1.1.4",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
     "cors": "^2.8.5",
     "helmet": "^4.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.13.2",
     "redis": "^3.1.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "swagger-ui-express": "^4.1.6",
-    "jsonwebtoken": "^8.5.1",
-    "@nestjs/cli": "^7.6.0",
-    "@nestjs/schematics": "^7.3.1"
+    "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
     "@nestjs/testing": "^7.6.17",
