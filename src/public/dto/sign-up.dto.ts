@@ -1,4 +1,4 @@
-import { IsDefined, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, Length } from "class-validator";
+import { IsDefined, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, IsUrl, Length } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class SignUpDto {
@@ -67,4 +67,17 @@ export class SignUpDto {
   @IsPhoneNumber()
   @IsOptional()
   phoneNumber: string;
+  
+  @ApiProperty({
+    example: "https://somestock/som-cool-photo.jpg",
+    description: "The URL to the photo of the User.",
+    format: "url",
+    minLength: 12,
+    maxLength: 20
+  })
+  @IsDefined()
+  @IsNotEmpty()
+  @IsUrl()
+  @IsOptional()
+  photo: string;
 }

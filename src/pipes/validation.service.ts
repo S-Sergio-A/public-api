@@ -87,6 +87,7 @@ export class ValidationService {
       data.loginAttempts = 0;
       data.isBlocked = false;
       data.blockExpires = 0;
+      data.photo = "";
     } catch (e) {
       console.log(e);
       errors.internalFailure = e;
