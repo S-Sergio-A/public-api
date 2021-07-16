@@ -55,7 +55,7 @@ export class PublicController {
   @ApiOperation({ summary: "Verify registration." })
   @ApiOkResponse({})
   async verifyRegistration(@Query() query): Promise<Observable<any>> {
-    return this.client.send({ cmd: "verify-registration" }, { userId: query.userId, verification: query.verification });
+    return this.client.send({ cmd: "verify-registration" }, { email: query.email, verification: query.verification });
   }
 
   @Post("/login")
