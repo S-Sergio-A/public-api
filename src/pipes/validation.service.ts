@@ -391,7 +391,9 @@ export class ValidationService {
     let errors: Partial<RoomError & InternalFailure> = {};
 
     try {
-      data.membersCount = data.usersID ? data.usersID.length : 1;
+      if (!data.membersCount) {
+        data.membersCount = data.usersID ? data.usersID.length : 1;
+      }
 
       if (await this._isEmpty(data.name)) {
         errors.name = GlobalErrorCodes.EMPTY_ERROR.value;
