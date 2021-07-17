@@ -1,7 +1,7 @@
-import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { InternalException } from '../Internal.exception';
-import { RequestBodyException } from '../RequestBody.exception';
+import { ExceptionFilter, Catch, ArgumentsHost } from "@nestjs/common";
+import { Request, Response } from "express";
+import { InternalException } from "../Internal.exception";
+import { RequestBodyException } from "../RequestBody.exception";
 
 @Catch(InternalException, RequestBodyException)
 export class RequestBodyAndInternalExceptionFilter implements ExceptionFilter {

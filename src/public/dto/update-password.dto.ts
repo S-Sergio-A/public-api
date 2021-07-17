@@ -27,9 +27,9 @@ export class ChangePasswordDto {
   @IsString()
   @Length(8, 50)
   newPassword: string;
-  
+
   @ApiProperty({
-    description: 'Verification code sent to the User.',
+    description: "Verification code sent to the User.",
     format: "uuid",
     uniqueItems: true
   })

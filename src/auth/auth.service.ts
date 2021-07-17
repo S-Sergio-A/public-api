@@ -11,7 +11,7 @@ const jwt = require("jsonwebtoken");
 export class AuthService {
   async verifyToken(req: Request) {
     let token: string;
-    
+
     if (typeof req.headers["access-token"] === "string") {
       token = req.headers["access-token"].split('"').join("") || req.cookies.token;
     } else if (Array.isArray(req.headers["access-token"])) {
@@ -21,7 +21,7 @@ export class AuthService {
         message: TokenErrorCodes.USER_TOKEN_NOT_PROVIDED.value
       });
     }
-    
+
     if (token) {
       try {
         const decrypt = await jwt.verify(token, process.env.JWT_SECRET);
@@ -38,10 +38,10 @@ export class AuthService {
       }
     }
   }
-  
+
   async verifyClientsToken(req: Request) {
     let token: string;
-    
+
     if (typeof req.headers["client-token"] === "string") {
       token = req.headers["client-token"].split('"').join("") || req.cookies.clientsToken;
     } else if (Array.isArray(req.headers["client-token"])) {
@@ -51,7 +51,7 @@ export class AuthService {
         message: TokenErrorCodes.CLIENT_TOKEN_NOT_PROVIDED.value
       });
     }
-    
+
     if (token) {
       try {
         const decrypt = await jwt.verify(token, process.env.CLIENTS_JWT_SECRET);

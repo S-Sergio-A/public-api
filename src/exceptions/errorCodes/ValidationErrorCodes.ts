@@ -53,19 +53,19 @@ export class ValidationErrorCodes {
     923,
     "This mobile phone number length doesn't match the rules."
   );
-  
+
   static readonly PASSWORD_RESTRICTED_CHARACTERS = new ValidationErrorCodes(
     "PASSWORD_RESTRICTED_CHARACTERS",
     936,
     "This password includes restricted characters."
   );
-  
+
   static readonly PASSWORDS_DOES_NOT_MATCH = new ValidationErrorCodes(
     "PASSWORDS_DOES_NOT_MATCH",
     944,
     "The password doesn't match with password verification."
   );
-  
+
   static readonly EMAIL_MATCHES_WITH_THE_PREVIOUS = new ValidationErrorCodes(
     "EMAIL_MATCHES_WITH_THE_PREVIOUS",
     960,
@@ -86,7 +86,7 @@ export class ValidationErrorCodes {
     963,
     "This password matches with your previous one."
   );
-  
+
   private constructor(private readonly key: string, public readonly code: number, public readonly value: string) {}
 
   toString() {

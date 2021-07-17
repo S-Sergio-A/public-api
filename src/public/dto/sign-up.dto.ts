@@ -67,7 +67,7 @@ export class SignUpDto {
   @IsPhoneNumber()
   @IsOptional()
   phoneNumber: string;
-  
+
   @ApiProperty({
     example: "https://somestock/som-cool-photo.jpg",
     description: "The URL to the photo of the User.",

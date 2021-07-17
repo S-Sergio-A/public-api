@@ -28,9 +28,9 @@ export class ChangeEmailDto {
   @IsEmail()
   @Length(6, 254)
   newEmail: string;
-  
+
   @ApiProperty({
-    description: 'Verification code sent to the User.',
+    description: "Verification code sent to the User.",
     format: "uuid",
     uniqueItems: true
   })

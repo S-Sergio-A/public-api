@@ -29,7 +29,7 @@ export class ChangePhoneNumberDto {
   readonly newPhoneNumber: string;
 
   @ApiProperty({
-    description: 'Verification code sent to the User.',
+    description: "Verification code sent to the User.",
     format: "uuid",
     uniqueItems: true
   })
