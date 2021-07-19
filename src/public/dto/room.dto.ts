@@ -3,16 +3,6 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class RoomDto {
   @ApiProperty({
-    example: "13f4fwe4",
-    description: "ID of the message.",
-    format: "string"
-  })
-  @IsDefined()
-  @IsNotEmpty()
-  @IsString()
-  id: string;
-
-  @ApiProperty({
     example: "Saddam Hussein's Cave",
     description: "Name of the chat.",
     format: "string"
