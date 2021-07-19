@@ -350,6 +350,13 @@ export class ValidationService {
           errors.birthday = ValidationErrorCodes.INVALID_CREATE_BIRTHDAY.value;
         }
       }
+      if (data.hasOwnProperty("photo")) {
+        if (await this._isEmpty(data.photo)) {
+          errors.photo = GlobalErrorCodes.EMPTY_ERROR.value;
+        } else if (!validator.isURL(data.photo)) {
+          errors.photo = ValidationErrorCodes.INVALID_CREATE_PHOTO.value;
+        }
+      }
     } catch (e) {
       console.log(e);
       errors.internalFailure = e;

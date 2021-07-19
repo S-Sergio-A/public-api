@@ -1,4 +1,4 @@
-import { IsDate, IsOptional, IsString } from "class-validator";
+import { IsDate, IsOptional, IsString, IsUrl } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class AddOrUpdateOptionalDataDto {
@@ -34,4 +34,13 @@ export class AddOrUpdateOptionalDataDto {
   @IsDate()
   @IsOptional()
   birthday: string;
+  
+  @ApiProperty({
+    example: "https://somestock/som-cool-photo.jpg",
+    description: "The URL to the photo of the User.",
+    format: "url"
+  })
+  @IsUrl()
+  @IsOptional()
+  photo: string;
 }
