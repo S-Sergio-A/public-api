@@ -380,6 +380,18 @@ export class PublicController {
     );
   }
 
+  @Get("/rights")
+  @HttpCode(HttpStatus.OK)
+  public async getUserRightsInRoom(@Query() query): Promise<Observable<any>> {
+    return this.client.send(
+      { cmd: "load-rights" },
+      {
+        userId: query.userId,
+        roomId: query.roomId
+      }
+    );
+  }
+
   private async validateRequestAndHeaders(req: Request, headers: any, validateId: boolean = true) {
     const userId = req.user?.userId;
     const fingerprint = headers["fingerprint"];
