@@ -14,20 +14,25 @@ export class ValidationErrorCodes {
     902,
     "This birthday doesn't match the rules."
   );
-  static readonly INVALID_CREATE_EMAIL = new ValidationErrorCodes("INVALID_CREATE_EMAIL", 903, "This email doesn't match the rules.");
+  static readonly INVALID_CREATE_PHOTO = new ValidationErrorCodes(
+    "INVALID_CREATE_PHOTO",
+    903,
+    "This photo URL doesn't match the rules."
+  );
+  static readonly INVALID_CREATE_EMAIL = new ValidationErrorCodes("INVALID_CREATE_EMAIL", 904, "This email doesn't match the rules.");
   static readonly INVALID_CREATE_USERNAME = new ValidationErrorCodes(
     "INVALID_CREATE_USERNAME",
-    904,
+    905,
     "This username doesn't match the rules."
   );
   static readonly INVALID_CREATE_TEL_NUM = new ValidationErrorCodes(
     "INVALID_CREATE_TEL_NUM",
-    905,
+    906,
     "This mobile mobile phone number doesn't match the rules."
   );
   static readonly INVALID_CREATE_PASSWORD = new ValidationErrorCodes(
     "INVALID_CREATE_PASSWORD",
-    906,
+    907,
     "This password doesn't match the rules."
   );
 

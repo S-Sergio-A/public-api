@@ -65,19 +65,5 @@ export class SignUpDto {
   @IsDefined()
   @IsNotEmpty()
   @IsPhoneNumber()
-  @IsOptional()
   phoneNumber: string;
-
-  @ApiProperty({
-    example: "https://somestock/som-cool-photo.jpg",
-    description: "The URL to the photo of the User.",
-    format: "url",
-    minLength: 12,
-    maxLength: 20
-  })
-  @IsDefined()
-  @IsNotEmpty()
-  @IsUrl()
-  @IsOptional()
-  photo: string;
 }
