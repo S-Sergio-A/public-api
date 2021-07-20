@@ -327,13 +327,13 @@ export class PublicController {
   @Put("/room")
   @HttpCode(HttpStatus.CREATED)
   async updateRoom(@Query() query, @Headers() headers, @Body() roomDto: Partial<RoomDto>): Promise<Observable<any>> {
-    return this.client.send({ cmd: "update-room" }, { rights: headers["rights"], roomId: query.roomId, roomDto });
+    return this.client.send({ cmd: "update-room" }, { rights: headers["rights"].split(","), roomId: query.roomId, roomDto });
   }
 
   @Delete("/room/:id")
   @HttpCode(HttpStatus.OK)
   public async deleteRoom(@Req() req: Request, @Headers() headers): Promise<Observable<any>> {
-    return this.client.send({ cmd: "delete-room" }, { rights: headers["rights"], roomId: req.params.id });
+    return this.client.send({ cmd: "delete-room" }, { rights: headers["rights"].split(","), roomId: req.params.id });
   }
 
   @Put("/user")
@@ -342,7 +342,7 @@ export class PublicController {
     return this.client.send(
       { cmd: "add-user" },
       {
-        rights: headers["rights"],
+        rights: headers["rights"].split(","),
         userId: query.userId,
         roomId: query.roomId,
         newUserId: query.newUserId,
@@ -357,7 +357,7 @@ export class PublicController {
     return this.client.send(
       { cmd: "delete-user" },
       {
-        rights: headers["rights"],
+        rights: headers["rights"].split(","),
         userId: query.userId,
         roomId: query.roomId
       }
@@ -374,7 +374,7 @@ export class PublicController {
     return this.client.send(
       { cmd: "change-user-rights" },
       {
-        rights: headers["rights"],
+        rights: headers["rights"].split(","),
         userId: query.userId,
         roomId: query.roomId,
         newRights
