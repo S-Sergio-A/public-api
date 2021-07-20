@@ -338,13 +338,15 @@ export class PublicController {
 
   @Put("/user")
   @HttpCode(HttpStatus.CREATED)
-  public async addUserToRoom(@Query() query, @Headers() headers): Promise<Observable<any>> {
+  public async addUserToRoom(@Query() query, @Headers() headers, @Body() userRights): Promise<Observable<any>> {
     return this.client.send(
       { cmd: "add-user" },
       {
         rights: headers["rights"],
         userId: query.userId,
-        roomId: query.roomId
+        roomId: query.roomId,
+        newUserId: query.newUserId,
+        userRights
       }
     );
   }
@@ -376,6 +378,30 @@ export class PublicController {
         userId: query.userId,
         roomId: query.roomId,
         newRights
+      }
+    );
+  }
+
+  @Get("/notifications")
+  @HttpCode(HttpStatus.OK)
+  public async getUserNotificationsSettings(@Query() query): Promise<Observable<any>> {
+    return this.client.send(
+      { cmd: "get-notifications-settings" },
+      {
+        userId: query.userId
+      }
+    );
+  }
+
+  @Put("/notifications")
+  @HttpCode(HttpStatus.OK)
+  public async changeNotificationSettings(@Query() query): Promise<Observable<any>> {
+    return this.client.send(
+      { cmd: "change-notifications-settings" },
+      {
+        userId: query.userId,
+        roomId: query.roomId,
+        notifications: query.notifications
       }
     );
   }
