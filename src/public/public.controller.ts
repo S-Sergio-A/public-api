@@ -330,10 +330,10 @@ export class PublicController {
     return this.client.send({ cmd: "update-room" }, { rights: headers["rights"].split(","), roomId: query.roomId, roomDto });
   }
 
-  @Delete("/room/:id")
+  @Delete("/room")
   @HttpCode(HttpStatus.OK)
-  public async deleteRoom(@Req() req: Request, @Headers() headers): Promise<Observable<any>> {
-    return this.client.send({ cmd: "delete-room" }, { rights: headers["rights"].split(","), roomId: req.params.id });
+  public async deleteRoom(@Query() query, @Headers() headers): Promise<Observable<any>> {
+    return this.client.send({ cmd: "delete-room" }, { rights: headers["rights"].split(","), roomId: query.roomId });
   }
 
   @Put("/user")
@@ -345,7 +345,7 @@ export class PublicController {
         rights: headers["rights"].split(","),
         userId: query.userId,
         roomId: query.roomId,
-        newUserId: query.newUserId,
+        newUserIdentifier: query.newUserIdentifier,
         userRights
       }
     );
@@ -359,7 +359,8 @@ export class PublicController {
       {
         rights: headers["rights"].split(","),
         userId: query.userId,
-        roomId: query.roomId
+        roomId: query.roomId,
+        type: query.type
       }
     );
   }
@@ -393,6 +394,18 @@ export class PublicController {
     );
   }
 
+  @Get("/rights")
+  @HttpCode(HttpStatus.OK)
+  public async getUserRightsInRoom(@Query() query): Promise<Observable<any>> {
+    return this.client.send(
+      { cmd: "load-rights" },
+      {
+        userId: query.userId,
+        roomId: query.roomId
+      }
+    );
+  }
+  
   @Put("/notifications")
   @HttpCode(HttpStatus.OK)
   public async changeNotificationSettings(@Query() query): Promise<Observable<any>> {
@@ -402,18 +415,6 @@ export class PublicController {
         userId: query.userId,
         roomId: query.roomId,
         notifications: query.notifications
-      }
-    );
-  }
-
-  @Get("/rights")
-  @HttpCode(HttpStatus.OK)
-  public async getUserRightsInRoom(@Query() query): Promise<Observable<any>> {
-    return this.client.send(
-      { cmd: "load-rights" },
-      {
-        userId: query.userId,
-        roomId: query.roomId
       }
     );
   }
