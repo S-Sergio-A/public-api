@@ -42,6 +42,14 @@ export class PublicController {
     });
   }
 
+  @Post("/invoke")
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: "Invoke all microservices (for Heroku)." })
+  @ApiCreatedResponse({})
+  async invokeAll(): Promise<Observable<void>> {
+    return this.client.send({ cmd: "invoke" }, null);
+  }
+
   @Post("/sign-up")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Register public." })
@@ -405,7 +413,7 @@ export class PublicController {
       }
     );
   }
-  
+
   @Put("/notifications")
   @HttpCode(HttpStatus.OK)
   public async changeNotificationSettings(@Query() query): Promise<Observable<any>> {
