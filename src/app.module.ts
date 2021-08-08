@@ -45,6 +45,7 @@ export class AppModule {
         { path: "/public/password", method: RequestMethod.PUT },
         { path: "/public/phone", method: RequestMethod.PUT },
         { path: "/public/optional", method: RequestMethod.PUT },
+        { path: "/public/photo", method: RequestMethod.PUT },
         { path: "/public/refresh-session", method: RequestMethod.GET }
       );
   }
