@@ -1,7 +1,22 @@
-import { Body, Controller, Delete, Get, Headers, HttpCode, HttpStatus, Post, Put, Query, Req, UseFilters } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Put,
+  Query,
+  Req,
+  UploadedFile,
+  UseFilters,
+  UseInterceptors
+} from "@nestjs/common";
 import { ClientProxy, ClientProxyFactory, Transport } from "@nestjs/microservices";
 import { ApiCreatedResponse, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
-import { Request } from "express";
+import { Express, Request } from "express";
 import { Observable } from "rxjs";
 import { RequestBodyAndInternalExceptionFilter } from "../exceptions/filters/RequestBodyAndInternal.exception-filter";
 import { ChangePhoneNumberValidationPipe } from "../pipes/validation/changePhoneNumber.validation.pipe";
@@ -25,6 +40,7 @@ import { ChangeEmailDto } from "./dto/update-email.dto";
 import { ContactFormDto } from "./dto/contact-form.dto";
 import { SignUpDto } from "./dto/sign-up.dto";
 import { RoomDto } from "./dto/room.dto";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @UseFilters(new RequestBodyAndInternalExceptionFilter(), new ValidationExceptionFilter())
 @Controller("public")
@@ -263,6 +279,15 @@ export class PublicController {
     return this.client.send({ cmd: "change-optional" }, { userId: req.user.userId, optionalDataDto });
   }
 
+  @Put("/photo")
+  @UseInterceptors(FileInterceptor("file"))
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: "Add or update a user profile photo." })
+  @ApiCreatedResponse({})
+  async changePhoto(@Req() req: Request, @UploadedFile() photo: Express.Multer.File): Promise<Observable<any>> {
+    return this.client.send({ cmd: "change-photo" }, { userId: req.user.userId, photo });
+  }
+
   @Get("/refresh-session")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Refresh the public session." })
@@ -336,6 +361,15 @@ export class PublicController {
   @HttpCode(HttpStatus.CREATED)
   async updateRoom(@Query() query, @Headers() headers, @Body() roomDto: Partial<RoomDto>): Promise<Observable<any>> {
     return this.client.send({ cmd: "update-room" }, { rights: headers["rights"].split(","), roomId: query.roomId, roomDto });
+  }
+  
+  @Put("/room-photo")
+  @UseInterceptors(FileInterceptor("file"))
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: "Add or update a room photo." })
+  @ApiCreatedResponse({})
+  async changeRoomPhoto(@Query() query, @Headers() headers, @UploadedFile() photo: Express.Multer.File): Promise<Observable<any>> {
+    return this.client.send({ cmd: "change-room-photo" }, { rights: headers["rights"].split(","), roomId: query.roomId, photo });
   }
 
   @Delete("/room")
