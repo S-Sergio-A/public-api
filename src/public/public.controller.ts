@@ -360,7 +360,7 @@ export class PublicController {
   @Put("/room")
   @HttpCode(HttpStatus.CREATED)
   async updateRoom(@Query() query, @Headers() headers, @Body() roomDto: Partial<RoomDto>): Promise<Observable<any>> {
-    return this.client.send({ cmd: "update-room" }, { rights: headers["rights"].split(","), roomId: query.roomId, roomDto });
+    return this.client.send({ cmd: "update-room" }, { rights: headers["rights"].split(","), userId: query.userId, roomId: query.roomId, roomDto });
   }
   
   @Put("/room-photo")
@@ -369,7 +369,7 @@ export class PublicController {
   @ApiOperation({ summary: "Add or update a room photo." })
   @ApiCreatedResponse({})
   async changeRoomPhoto(@Query() query, @Headers() headers, @UploadedFile() photo: Express.Multer.File): Promise<Observable<any>> {
-    return this.client.send({ cmd: "change-room-photo" }, { rights: headers["rights"].split(","), roomId: query.roomId, photo });
+    return this.client.send({ cmd: "change-room-photo" }, { rights: headers["rights"].split(","), userId: query.userId, roomId: query.roomId, photo });
   }
 
   @Delete("/room")
