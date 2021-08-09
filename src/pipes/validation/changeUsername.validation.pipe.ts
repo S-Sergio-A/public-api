@@ -13,12 +13,12 @@ export class ChangeUsernameValidationPipe implements PipeTransform {
       return value;
     }
 
-    const { errors, isValid } = await ValidationService.prototype.validateUsernameChange(value);
+    const { error, isValid } = await ValidationService.prototype.validateUsernameChange(value);
 
     if (isValid) {
       return value;
     } else {
-      throw new ValidationException(errors);
+      throw new ValidationException(error);
     }
   }
 }

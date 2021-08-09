@@ -13,12 +13,12 @@ export class OptionalDataValidationPipe implements PipeTransform {
       return value;
     }
 
-    const { errors, isValid } = await ValidationService.prototype.validateOptionalDataChange(value);
+    const { error, isValid } = await ValidationService.prototype.validateOptionalDataChange(value);
 
     if (isValid) {
       return value;
     } else {
-      throw new ValidationException(errors);
+      throw new ValidationException(error);
     }
   }
 }

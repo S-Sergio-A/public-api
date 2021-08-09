@@ -11,8 +11,10 @@ export class RequestBodyAndInternalExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     response.status(200).json({
-      statusCode: exception.response.code,
-      message: exception.response.message,
+      error: {
+        statusCode: exception.response.code,
+        message: exception.response.message
+      },
       timestamp: new Date().toUTCString(),
       path: request.url
     });

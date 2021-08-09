@@ -13,12 +13,12 @@ export class RegistrationValidationPipe implements PipeTransform {
       return value;
     }
 
-    const { errors, isValid } = await ValidationService.prototype.validateRegistration(value);
+    const { error, isValid } = await ValidationService.prototype.validateRegistration(value);
 
     if (isValid) {
       return value;
     } else {
-      throw new ValidationException(errors);
+      throw new ValidationException(error);
     }
   }
 }

@@ -13,12 +13,12 @@ export class ChangePhoneNumberValidationPipe implements PipeTransform {
       return value;
     }
 
-    const { errors, isValid } = await ValidationService.prototype.validatePhoneNumberChange(value);
+    const { error, isValid } = await ValidationService.prototype.validatePhoneNumberChange(value);
 
     if (isValid) {
       return value;
     } else {
-      throw new ValidationException(errors);
+      throw new ValidationException(error);
     }
   }
 }

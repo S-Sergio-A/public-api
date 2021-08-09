@@ -13,12 +13,12 @@ export class ChangeEmailValidationPipe implements PipeTransform {
       return value;
     }
 
-    const { errors, isValid } = await ValidationService.prototype.validateEmailChange(value);
+    const { error, isValid } = await ValidationService.prototype.validateEmailChange(value);
 
     if (isValid) {
       return value;
     } else {
-      throw new ValidationException(errors);
+      throw new ValidationException(error);
     }
   }
 }

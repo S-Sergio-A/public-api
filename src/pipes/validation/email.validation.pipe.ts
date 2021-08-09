@@ -15,12 +15,12 @@ export class EmailValidationPipe implements PipeTransform {
       return value;
     }
 
-    const { errors, isValid } = await this.validation.validateEmail(value);
+    const { error, isValid } = await this.validation.validateEmail(value);
 
     if (isValid) {
       return value;
     } else {
-      throw new ValidationException(errors);
+      throw new ValidationException(error);
     }
   }
 }

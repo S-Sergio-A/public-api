@@ -10,7 +10,7 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     response.status(200).json({
-      errors: exception.response,
+      error: exception.response,
       timestamp: new Date().toUTCString(),
       path: request.url
     });

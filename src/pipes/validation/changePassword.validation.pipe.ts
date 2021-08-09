@@ -13,12 +13,12 @@ export class ChangePasswordValidationPipe implements PipeTransform {
       return value;
     }
 
-    const { errors, isValid } = await ValidationService.prototype.validatePasswordChange(value);
+    const { error, isValid } = await ValidationService.prototype.validatePasswordChange(value);
 
     if (isValid) {
       return value;
     } else {
-      throw new ValidationException(errors);
+      throw new ValidationException(error);
     }
   }
 }

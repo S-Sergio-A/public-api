@@ -13,12 +13,12 @@ export class LoginValidationPipe implements PipeTransform {
       return value;
     }
 
-    const { errors, isValid } = await ValidationService.prototype.validateLogin(value);
+    const { error, isValid } = await ValidationService.prototype.validateLogin(value);
 
     if (isValid) {
       return value;
     } else {
-      throw new ValidationException(errors);
+      throw new ValidationException(error);
     }
   }
 }
