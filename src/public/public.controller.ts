@@ -423,7 +423,8 @@ export class PublicController {
       { cmd: "change-user-rights" },
       {
         rights: headers["rights"].split(","),
-        userId: query.userId,
+        performerUserId: query.performerUserId,
+        targetUserId: query.targetUserId,
         roomId: query.roomId,
         newRights
       }
