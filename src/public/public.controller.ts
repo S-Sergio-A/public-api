@@ -62,7 +62,7 @@ export class PublicController {
   @ApiOperation({ summary: "Invoke all microservices (for Heroku)." })
   @ApiCreatedResponse({})
   async invokeAll(): Promise<Observable<void>> {
-    return this.client.send({ cmd: "invoke" }, null);
+    return this.client.send({ cmd: "invoke" }, {});
   }
 
   @Post("/sign-up")
