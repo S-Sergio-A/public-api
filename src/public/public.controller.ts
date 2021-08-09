@@ -10,7 +10,6 @@ import {
   Put,
   Query,
   Req,
-  UploadedFile,
   UseFilters,
   UseInterceptors
 } from "@nestjs/common";
@@ -58,7 +57,7 @@ export class PublicController {
     });
   }
 
-  @Post("/invoke")
+  @Get("/invoke")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Invoke all microservices (for Heroku)." })
   @ApiCreatedResponse({})
