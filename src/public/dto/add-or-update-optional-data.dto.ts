@@ -34,7 +34,7 @@ export class AddOrUpdateOptionalDataDto {
   @IsDate()
   @IsOptional()
   birthday: string;
-  
+
   @ApiProperty({
     example: "https://somestock/som-cool-photo.jpg",
     description: "The URL to the photo of the User.",

@@ -14,11 +14,7 @@ export class ValidationErrorCodes {
     902,
     "This birthday doesn't match the rules."
   );
-  static readonly INVALID_CREATE_PHOTO = new ValidationErrorCodes(
-    "INVALID_CREATE_PHOTO",
-    903,
-    "This photo URL doesn't match the rules."
-  );
+  static readonly INVALID_CREATE_PHOTO = new ValidationErrorCodes("INVALID_CREATE_PHOTO", 903, "This photo URL doesn't match the rules.");
   static readonly INVALID_CREATE_EMAIL = new ValidationErrorCodes("INVALID_CREATE_EMAIL", 904, "This email doesn't match the rules.");
   static readonly INVALID_CREATE_USERNAME = new ValidationErrorCodes(
     "INVALID_CREATE_USERNAME",
