@@ -352,8 +352,8 @@ export class PublicController {
 
   @Get("/room/:name")
   @HttpCode(HttpStatus.OK)
-  async findRoomByName(@Req() req: Request): Promise<Observable<any>> {
-    return this.client.send({ cmd: "find-room-by-name" }, { name: req.params.name });
+  async findRoomByName(@Req() req: Request, @Query() query): Promise<Observable<any>> {
+    return this.client.send({ cmd: "find-room-by-name" }, { name: req.params.name, userId: query.userId });
   }
 
   @Put("/room")
@@ -382,7 +382,7 @@ export class PublicController {
   public async deleteRoom(@Query() query, @Headers() headers): Promise<Observable<any>> {
     return this.client.send({ cmd: "delete-room" }, { rights: headers["rights"].split(","), roomId: query.roomId });
   }
-  
+
   @Put("/enter-room")
   @HttpCode(HttpStatus.CREATED)
   public async enterPublicRoom(@Query() query): Promise<Observable<any>> {
@@ -390,12 +390,11 @@ export class PublicController {
       { cmd: "enter-public-room" },
       {
         userId: query.userId,
-        roomId: query.roomId,
+        roomId: query.roomId
       }
     );
   }
-  
-  
+
   @Put("/user")
   @HttpCode(HttpStatus.CREATED)
   public async addUserToRoom(@Query() query, @Headers() headers, @Body() userRights): Promise<Observable<any>> {
