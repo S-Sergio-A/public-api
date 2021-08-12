@@ -4,7 +4,6 @@ import { ApiProperty } from "@nestjs/swagger";
 export class VerifyPasswordResetDto {
   @ApiProperty({
     description: 'Verification code assigned to public when "forgot password" request received.',
-    format: "uuid",
     uniqueItems: true
   })
   @IsNotEmpty()
@@ -12,9 +11,7 @@ export class VerifyPasswordResetDto {
   readonly verification: string;
 
   @ApiProperty({
-    example: "New secret password.",
-    description: "The new password of the User.",
-    format: "string",
+    description: "New password of the user.",
     minLength: 8,
     maxLength: 50
   })
@@ -25,9 +22,7 @@ export class VerifyPasswordResetDto {
   newPassword: string;
 
   @ApiProperty({
-    example: "New secret password.",
-    description: "The password verification of the User.",
-    format: "string",
+    description: "Password verification of the user.",
     minLength: 8,
     maxLength: 50
   })

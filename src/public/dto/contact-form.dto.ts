@@ -4,8 +4,7 @@ import { ApiProperty } from "@nestjs/swagger";
 export class ContactFormDto {
   @ApiProperty({
     example: "petroshrekovenko@gmail.com",
-    description: "The email of the Client.",
-    format: "email",
+    description: "Email of the client.",
     uniqueItems: true,
     minLength: 6,
     maxLength: 254
@@ -18,8 +17,7 @@ export class ContactFormDto {
 
   @ApiProperty({
     example: "Petro Shrekovenko.",
-    description: "The full name of the Client.",
-    format: "string",
+    description: "Full name of the client.",
     minLength: 2,
     maxLength: 100
   })
@@ -31,8 +29,7 @@ export class ContactFormDto {
 
   @ApiProperty({
     example: "Careers | PR | Support.",
-    description: "The subject of the appeal.",
-    format: "string",
+    description: "Subject of the message.",
     minLength: 8,
     maxLength: 200
   })
@@ -43,8 +40,7 @@ export class ContactFormDto {
   readonly subject: string;
 
   @ApiProperty({
-    description: "The message of the Client.",
-    format: "string",
+    description: "Message of the client.",
     minLength: 8,
     maxLength: 200
   })

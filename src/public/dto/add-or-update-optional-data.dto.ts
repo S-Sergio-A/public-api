@@ -4,8 +4,7 @@ import { ApiProperty } from "@nestjs/swagger";
 export class AddOrUpdateOptionalDataDto {
   @ApiProperty({
     example: "Petro",
-    description: "The first name of the User.",
-    format: "string",
+    description: "First name of the user.",
     minLength: 1,
     maxLength: 50
   })
@@ -15,8 +14,7 @@ export class AddOrUpdateOptionalDataDto {
 
   @ApiProperty({
     example: "Shrekovenko",
-    description: "The last name of the User.",
-    format: "string",
+    description: "Last name of the user.",
     minLength: 1,
     maxLength: 50
   })
@@ -26,8 +24,7 @@ export class AddOrUpdateOptionalDataDto {
 
   @ApiProperty({
     example: "02.10.2002",
-    description: "The birthday of the User.",
-    format: "date",
+    description: "Birthday of the user.",
     minLength: 10,
     maxLength: 10
   })
@@ -37,8 +34,7 @@ export class AddOrUpdateOptionalDataDto {
 
   @ApiProperty({
     example: "https://somestock/som-cool-photo.jpg",
-    description: "The URL to the photo of the User.",
-    format: "url"
+    description: "URL to the photo of the user."
   })
   @IsUrl()
   @IsOptional()

@@ -3,9 +3,8 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class ChangeEmailDto {
   @ApiProperty({
-    example: "oldpetroshrekovenko@gmail.com",
-    description: "The old email of the User.",
-    format: "email",
+    example: "oldpetroshrekovenko@mail.com",
+    description: "Old email of the user.",
     uniqueItems: true,
     minLength: 6,
     maxLength: 254
@@ -16,9 +15,8 @@ export class ChangeEmailDto {
   oldEmail: string;
 
   @ApiProperty({
-    example: "newpetroshrekovenko@gmail.com",
-    description: "The new email of the User.",
-    format: "email",
+    example: "newpetroshrekovenko@mail.com",
+    description: "New email of the user.",
     uniqueItems: true,
     minLength: 6,
     maxLength: 254
@@ -30,7 +28,7 @@ export class ChangeEmailDto {
   newEmail: string;
 
   @ApiProperty({
-    description: "Verification code sent to the User.",
+    description: "Verification code sent to the user.",
     format: "uuid",
     uniqueItems: true
   })

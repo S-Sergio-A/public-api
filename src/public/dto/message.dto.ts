@@ -4,8 +4,7 @@ import { ApiProperty } from "@nestjs/swagger";
 export class MessageDto {
   @ApiProperty({
     example: "af5d7dd9",
-    description: "ID of the messages where the message was sent.",
-    format: "string"
+    description: "ID of the messages where the message was sent."
   })
   @IsDefined()
   @IsNotEmpty()
@@ -14,8 +13,7 @@ export class MessageDto {
 
   @ApiProperty({
     example: "13:15 06.07.2021",
-    description: "The timestamp of the message.",
-    format: "string"
+    description: "The timestamp of the message."
   })
   @IsDefined()
   @IsNotEmpty()
@@ -24,8 +22,7 @@ export class MessageDto {
 
   @ApiProperty({
     example: "Я продаю лучшие хергитские гобелены. Не желаете взглянуть?",
-    description: "The public's message.",
-    format: "string"
+    description: "The public's message."
   })
   @IsDefined()
   @IsNotEmpty()
@@ -33,9 +30,8 @@ export class MessageDto {
   text: string;
 
   @ApiProperty({
-    example: "A photo in base64.",
-    description: "Optional attachment.",
-    format: "string"
+    example: "Up to 5 photos in base64. Maximum size is 200KB.",
+    description: "Optional attachment."
   })
   @IsDefined()
   @IsNotEmpty()
@@ -43,9 +39,8 @@ export class MessageDto {
   attachment?: string;
 
   @ApiProperty({
-    example: "13f4fpp9",
-    description: "ID of the public.",
-    format: "string"
+    example: "13f4fpp913f4fpp9",
+    description: "ID of the user."
   })
   @IsDefined()
   @IsNotEmpty()

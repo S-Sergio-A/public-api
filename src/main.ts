@@ -15,10 +15,12 @@ async function bootstrap() {
   });
 
   const config = new DocumentBuilder()
-    .setTitle("Authentication and public microservice")
-    .setDescription("The cats API description")
-    .setVersion("1.0")
-    .addTag("authentication, authorization, public")
+    .setTitle("Public API")
+    .setVersion("1.0.0")
+    .setDescription(
+      "This is a server that receives requests from the frontend [https://chatizze.herokuapp.com](https://chatizze.herokuapp.com) and publishes a message to which a specific server is subscribed."
+    )
+    .addTag("public")
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, document);

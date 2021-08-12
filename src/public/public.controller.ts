@@ -14,7 +14,7 @@ import {
   UseInterceptors
 } from "@nestjs/common";
 import { ClientProxy, ClientProxyFactory, Transport } from "@nestjs/microservices";
-import { ApiCreatedResponse, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import { ApiBadRequestResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { Express, Request } from "express";
 import { Observable } from "rxjs";
 import { RequestBodyAndInternalExceptionFilter } from "../exceptions/filters/RequestBodyAndInternal.exception-filter";
@@ -60,7 +60,7 @@ export class PublicController {
   @Get("/invoke")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Invoke all microservices (for Heroku)." })
-  @ApiCreatedResponse({})
+  @ApiOkResponse()
   async invokeAll(): Promise<Observable<void>> {
     return this.client.send({ cmd: "invoke" }, {});
   }
@@ -68,7 +68,8 @@ export class PublicController {
   @Post("/sign-up")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Register public." })
-  @ApiCreatedResponse({})
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
   async register(@Body(new RegistrationValidationPipe()) createUserDto: SignUpDto): Promise<Observable<any>> {
     return this.client.send({ cmd: "register" }, createUserDto);
   }
@@ -76,7 +77,8 @@ export class PublicController {
   @Put("/verify-registration")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Verify registration." })
-  @ApiOkResponse({})
+  @ApiOkResponse()
+  @ApiNotFoundResponse()
   async verifyRegistration(@Query() query): Promise<Observable<any>> {
     return this.client.send({ cmd: "verify-registration" }, { email: query.email, verification: query.verification });
   }
@@ -84,7 +86,8 @@ export class PublicController {
   @Post("/login")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Log in the public." })
-  @ApiCreatedResponse({})
+  @ApiOkResponse()
+  @ApiBadRequestResponse()
   async login(
     @Req() req: Request,
     @Headers() headers,
@@ -106,7 +109,8 @@ export class PublicController {
   @Post("/reset-password")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Request resetting for a forgotten password." })
-  @ApiOkResponse({})
+  @ApiOkResponse()
+  @ApiBadRequestResponse()
   async resetPassword(
     @Req() req: Request,
     @Headers() headers,
@@ -129,7 +133,8 @@ export class PublicController {
   @Put("/verify-password-reset")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Verify a password reset operation and create a new password." })
-  @ApiOkResponse({})
+  @ApiOkResponse()
+  @ApiBadRequestResponse()
   async verifyPasswordReset(@Query() query, @Body() verifyPasswordResetDto: VerifyPasswordResetDto): Promise<Observable<any> | HttpStatus> {
     return this.client.send({ cmd: "verify-password-reset" }, { email: query.email, verifyPasswordResetDto });
   }
@@ -137,7 +142,7 @@ export class PublicController {
   @Get("/logout")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Verify a password reset operation and create a new password." })
-  @ApiOkResponse({})
+  @ApiOkResponse()
   async logout(@Req() req: Request, @Headers() headers): Promise<Observable<any> | HttpStatus> {
     if (await this.validateRequestAndHeaders(req, headers)) {
       return this.client.send(
@@ -158,7 +163,8 @@ export class PublicController {
   @Put("/email")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Change an email." })
-  @ApiCreatedResponse({})
+  @ApiOkResponse()
+  @ApiBadRequestResponse()
   async changeEmail(
     @Req() req: Request,
     @Headers() headers,
@@ -182,7 +188,8 @@ export class PublicController {
   @Put("/username")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Change a username." })
-  @ApiCreatedResponse({})
+  @ApiOkResponse()
+  @ApiBadRequestResponse()
   async changeUsername(
     @Req() req: Request,
     @Headers() headers,
@@ -207,7 +214,8 @@ export class PublicController {
   @Put("/phone")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Change a phone number." })
-  @ApiCreatedResponse({})
+  @ApiOkResponse()
+  @ApiBadRequestResponse()
   async changePhoneNumber(
     @Req() req: Request,
     @Headers() headers,
@@ -231,7 +239,8 @@ export class PublicController {
   @Put("/password")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Change a password." })
-  @ApiCreatedResponse({})
+  @ApiOkResponse()
+  @ApiBadRequestResponse()
   async changePassword(
     @Req() req: Request,
     @Headers() headers,
@@ -255,7 +264,8 @@ export class PublicController {
   @Post("/verify-change")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Verify a primary data change." })
-  @ApiCreatedResponse({})
+  @ApiOkResponse()
+  @ApiBadRequestResponse()
   async verifyPrimaryDataChange(@Req() req: Request, @Query() query): Promise<Observable<any>> {
     return this.client.send(
       { cmd: "verify-primary-data-change" },
@@ -270,7 +280,8 @@ export class PublicController {
   @Put("/optional")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Add or update an optional data (first and last name, birthday)." })
-  @ApiCreatedResponse({})
+  @ApiOkResponse()
+  @ApiBadRequestResponse()
   async addOrChangeOptionalData(
     @Req() req: Request,
     @Body(new OptionalDataValidationPipe()) optionalDataDto: AddOrUpdateOptionalDataDto
@@ -282,7 +293,8 @@ export class PublicController {
   @UseInterceptors(FileInterceptor("file"))
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Add or update a user profile photo." })
-  @ApiCreatedResponse({})
+  @ApiOkResponse()
+  @ApiBadRequestResponse()
   async changePhoto(@Req() req: Request, @Body() photo: Express.Multer.File): Promise<Observable<any>> {
     return this.client.send({ cmd: "change-photo" }, { userId: req.user.userId, photo });
   }
@@ -290,7 +302,8 @@ export class PublicController {
   @Get("/refresh-session")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Refresh the public session." })
-  @ApiCreatedResponse({})
+  @ApiOkResponse()
+  @ApiBadRequestResponse()
   async refreshAccessToken(@Req() req: Request, @Headers() headers): Promise<Observable<any> | HttpStatus> {
     if (await this.validateRequestAndHeaders(req, headers)) {
       return this.client.send(
@@ -312,7 +325,8 @@ export class PublicController {
   @Post("/contact")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Handle an appeal." })
-  @ApiCreatedResponse({})
+  @ApiOkResponse()
+  @ApiBadRequestResponse()
   async contact(@Body(new ContactFormValidationPipe()) contactFormDto: ContactFormDto): Promise<Observable<any>> {
     return this.client.send({ cmd: "handle-appeal" }, contactFormDto);
   }
@@ -320,7 +334,8 @@ export class PublicController {
   @Get("/token")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Generate a client access-token." })
-  @ApiCreatedResponse({})
+  @ApiOkResponse()
+  @ApiBadRequestResponse()
   async generateToken(@Req() req: Request, @Headers() headers): Promise<Observable<any> | HttpStatus> {
     if (await this.validateRequestAndHeaders(req, headers, false)) {
       return this.client.send(
@@ -334,36 +349,54 @@ export class PublicController {
 
   @Post("/create-room")
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: "Create a new room." })
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
   async createRoom(@Req() req, @Body(new RoomValidationPipe()) roomDto: RoomDto): Promise<Observable<any>> {
     return this.client.send({ cmd: "create-room" }, { roomDto, userId: req.user.userId });
   }
-  
+
   @Get("/recent-message")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Add a recent message data to the room." })
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
   async recentMessage(@Query() query): Promise<Observable<any>> {
     return this.client.send({ cmd: "add-recent-message" }, { roomId: query.roomId });
   }
 
   @Get("/rooms")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Get all active rooms." })
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
   async getAllRooms(): Promise<Observable<any>> {
     return this.client.send({ cmd: "get-all-rooms" }, {});
   }
 
   @Get("/user-rooms")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Get all rooms where the user is a member." })
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
   async getAllUserRooms(@Req() req): Promise<Observable<any>> {
     return this.client.send({ cmd: "get-all-user-rooms" }, { userId: req.user.userId });
   }
 
   @Get("/room/:name")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Search a room by name." })
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
   async findRoomByName(@Req() req: Request, @Query() query): Promise<Observable<any>> {
     return this.client.send({ cmd: "find-room-by-name" }, { name: req.params.name, userId: query.userId });
   }
 
   @Put("/room")
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: "Update room data." })
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
   async updateRoom(@Query() query, @Headers() headers, @Body() roomDto: Partial<RoomDto>): Promise<Observable<any>> {
     return this.client.send(
       { cmd: "update-room" },
@@ -375,7 +408,8 @@ export class PublicController {
   @UseInterceptors(FileInterceptor("file"))
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Add or update a room photo." })
-  @ApiCreatedResponse({})
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
   async changeRoomPhoto(@Query() query, @Headers() headers, @Body() photo: Express.Multer.File): Promise<Observable<any>> {
     return this.client.send(
       { cmd: "change-room-photo" },
@@ -385,12 +419,18 @@ export class PublicController {
 
   @Delete("/room")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Delete a room." })
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
   public async deleteRoom(@Query() query, @Headers() headers): Promise<Observable<any>> {
     return this.client.send({ cmd: "delete-room" }, { rights: headers["rights"].split(","), roomId: query.roomId });
   }
 
   @Put("/enter-room")
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: "Enter a public room." })
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
   public async enterPublicRoom(@Query() query): Promise<Observable<any>> {
     return this.client.send(
       { cmd: "enter-public-room" },
@@ -403,6 +443,9 @@ export class PublicController {
 
   @Put("/user")
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: "Add a new member to the room." })
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
   public async addUserToRoom(@Query() query, @Headers() headers, @Body() userRights): Promise<Observable<any>> {
     return this.client.send(
       { cmd: "add-user" },
@@ -418,6 +461,9 @@ export class PublicController {
 
   @Delete("/user")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Kick a member from the room." })
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
   public async deleteUserFromRoom(@Query() query, @Headers() headers): Promise<Observable<any>> {
     return this.client.send(
       { cmd: "delete-user" },
@@ -432,6 +478,9 @@ export class PublicController {
 
   @Put("/user-rights")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Change the rights of a specific room member." })
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
   public async changeUserRightsInRoom(
     @Query() query,
     @Headers() headers,
@@ -462,6 +511,9 @@ export class PublicController {
 
   @Get("/rights")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Get the rights of a specific room member." })
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
   public async getUserRightsInRoom(@Query() query): Promise<Observable<any>> {
     return this.client.send(
       { cmd: "load-rights" },

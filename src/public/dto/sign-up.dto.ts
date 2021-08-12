@@ -1,11 +1,10 @@
-import { IsDefined, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, IsUrl, Length } from "class-validator";
+import { IsDefined, IsEmail, IsNotEmpty, IsPhoneNumber, IsString, Length } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class SignUpDto {
   @ApiProperty({
     example: "petroshrekovenko@gmail.com",
     description: "The email of the User.",
-    format: "email",
     uniqueItems: true,
     minLength: 6,
     maxLength: 254
@@ -17,9 +16,8 @@ export class SignUpDto {
   readonly email: string;
 
   @ApiProperty({
-    example: "PetroShrekovenko.",
+    example: "PetroShrekovenko",
     description: "The username of the User.",
-    format: "string",
     minLength: 4,
     maxLength: 30
   })
@@ -30,9 +28,7 @@ export class SignUpDto {
   readonly username: string;
 
   @ApiProperty({
-    example: "Secret password.",
     description: "The password of the User.",
-    format: "string",
     minLength: 8,
     maxLength: 200
   })
@@ -43,9 +39,7 @@ export class SignUpDto {
   password: string;
 
   @ApiProperty({
-    example: "Secret password.",
     description: "The password verification of the User.",
-    format: "string",
     minLength: 8,
     maxLength: 200
   })
@@ -58,7 +52,6 @@ export class SignUpDto {
   @ApiProperty({
     example: "+380501224456",
     description: "The mobile phone number of the User.",
-    format: "string",
     minLength: 12,
     maxLength: 20
   })

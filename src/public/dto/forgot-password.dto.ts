@@ -4,8 +4,7 @@ import { ApiProperty } from "@nestjs/swagger";
 export class ForgotPasswordDto {
   @ApiProperty({
     example: "petroshrekovenko@gmail.com",
-    description: "The email of the User.",
-    format: "email",
+    description: "Email of the user.",
     uniqueItems: true,
     minLength: 6,
     maxLength: 254
