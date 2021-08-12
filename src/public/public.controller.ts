@@ -337,6 +337,12 @@ export class PublicController {
   async createRoom(@Req() req, @Body(new RoomValidationPipe()) roomDto: RoomDto): Promise<Observable<any>> {
     return this.client.send({ cmd: "create-room" }, { roomDto, userId: req.user.userId });
   }
+  
+  @Get("/recent-message")
+  @HttpCode(HttpStatus.OK)
+  async recentMessage(@Query() query): Promise<Observable<any>> {
+    return this.client.send({ cmd: "add-recent-message" }, { roomId: query.roomId });
+  }
 
   @Get("/rooms")
   @HttpCode(HttpStatus.OK)
