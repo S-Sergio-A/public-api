@@ -67,7 +67,7 @@ export class PublicController {
 
   @Post("/sign-up")
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: "Register public." })
+  @ApiOperation({ summary: "Register a new user." })
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
   async register(@Body(new RegistrationValidationPipe()) createUserDto: SignUpDto): Promise<Observable<any>> {
@@ -85,7 +85,7 @@ export class PublicController {
 
   @Post("/login")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "Log in the public." })
+  @ApiOperation({ summary: "Log in the user." })
   @ApiOkResponse()
   @ApiBadRequestResponse()
   async login(

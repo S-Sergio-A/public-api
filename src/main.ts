@@ -20,7 +20,6 @@ async function bootstrap() {
     .setDescription(
       "This is a server that receives requests from the frontend [https://chatizze.herokuapp.com](https://chatizze.herokuapp.com) and publishes a message to which a specific server is subscribed."
     )
-    .addTag("public")
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, document);
