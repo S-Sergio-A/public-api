@@ -30,7 +30,7 @@ export class MessageDto {
   text: string;
 
   @ApiProperty({
-    example: "Up to 5 photos in base64. Maximum size is 200KB.",
+    example: "Up to 5 photos in base64. Maximum size is 100KB.",
     description: "Optional attachment."
   })
   @IsDefined()
