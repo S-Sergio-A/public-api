@@ -352,7 +352,7 @@ export class PublicController {
   @ApiOperation({ summary: "Create a new room." })
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
-  async createRoom(@Req() req, @Body(new RoomValidationPipe()) roomDto: RoomDto): Promise<Observable<any>> {
+  async createRoom(@Req() req: Request, @Body(new RoomValidationPipe()) roomDto: RoomDto): Promise<Observable<any>> {
     return this.client.send({ cmd: "create-room" }, { roomDto, userId: req.user.userId });
   }
 
@@ -379,7 +379,7 @@ export class PublicController {
   @ApiOperation({ summary: "Get all rooms where the user is a member." })
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
-  async getAllUserRooms(@Req() req): Promise<Observable<any>> {
+  async getAllUserRooms(@Req() req: Request): Promise<Observable<any>> {
     return this.client.send({ cmd: "get-all-user-rooms" }, { userId: req.user.userId });
   }
 
@@ -388,8 +388,8 @@ export class PublicController {
   @ApiOperation({ summary: "Search a room by name." })
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
-  async findRoomByName(@Req() req: Request, @Query() query): Promise<Observable<any>> {
-    return this.client.send({ cmd: "find-room-by-name" }, { name: req.params.name, userId: query.userId });
+  async findRoomAndUsersByName(@Req() req: Request, @Query() query): Promise<Observable<any>> {
+    return this.client.send({ cmd: "find-room-and-users-by-name" }, { name: req.params.name, userId: query.userId });
   }
 
   @Put("/room")
@@ -423,7 +423,7 @@ export class PublicController {
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
   public async deleteRoom(@Query() query, @Headers() headers): Promise<Observable<any>> {
-    return this.client.send({ cmd: "delete-room" }, { rights: headers["rights"].split(","), roomId: query.roomId });
+    return this.client.send({ cmd: "delete-room" }, { rights: headers["rights"].split(","), roomId: query.roomId, userId: query.userId });
   }
 
   @Put("/enter-room")
@@ -446,7 +446,7 @@ export class PublicController {
   @ApiOperation({ summary: "Add a new member to the room." })
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
-  public async addUserToRoom(@Query() query, @Headers() headers, @Body() userRights): Promise<Observable<any>> {
+  public async addUserToRoom(@Query() query, @Headers() headers, @Body() { userRights }): Promise<Observable<any>> {
     return this.client.send(
       { cmd: "add-user" },
       {
@@ -464,12 +464,13 @@ export class PublicController {
   @ApiOperation({ summary: "Kick a member from the room." })
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
-  public async deleteUserFromRoom(@Query() query, @Headers() headers): Promise<Observable<any>> {
+  public async deleteUserFromRoom(@Req() req: Request, @Query() query, @Headers() headers): Promise<Observable<any>> {
     return this.client.send(
       { cmd: "delete-user" },
       {
         rights: headers["rights"].split(","),
-        userId: query.userId,
+        userId: req.user.userId,
+        userIdToBeDeleted: query.userId,
         roomId: query.roomId,
         type: query.type
       }
@@ -537,7 +538,22 @@ export class PublicController {
     );
   }
 
-  private async validateRequestAndHeaders(req: Request, headers: any, validateId: boolean = true) {
+  @Get("/200")
+  @HttpCode(HttpStatus.OK)
+  public async error200(): Promise<HttpStatus> {
+    return HttpStatus.OK;
+  }
+
+  @Get("/500")
+  @HttpCode(HttpStatus.INTERNAL_SERVER_ERROR)
+  public async error500(): Promise<HttpStatus> {
+    new Promise((resolve) => {
+      setTimeout(resolve, 10000);
+    });
+    return HttpStatus.INTERNAL_SERVER_ERROR;
+  }
+
+  private async validateRequestAndHeaders(req: Request, headers: any, validateId = true) {
     const userId = req.user?.userId;
     const fingerprint = headers["fingerprint"];
     const userAgent = headers["user-agent"];

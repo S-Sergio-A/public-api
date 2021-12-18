@@ -22,7 +22,7 @@ const ms = require("ms");
 @Injectable()
 export class ValidationService {
   async validateRegistration(data) {
-    let error: Partial<UserSignUpError & InternalFailure> = {};
+    const error: Partial<UserSignUpError & InternalFailure> = {};
 
     try {
       if (await this._isEmpty(data.email)) {
@@ -102,7 +102,7 @@ export class ValidationService {
   }
 
   async validateLogin(data) {
-    let error: Partial<(UserLoginEmailError & UserLoginUsernameError & UserLoginPhoneNumberError) & InternalFailure> = {};
+    const error: Partial<(UserLoginEmailError & UserLoginUsernameError & UserLoginPhoneNumberError) & InternalFailure> = {};
 
     try {
       if (data.hasOwnProperty("email")) {
@@ -136,7 +136,7 @@ export class ValidationService {
   }
 
   async validateContactForm(data) {
-    let error: Partial<ContactFormError & InternalFailure> = {};
+    const error: Partial<ContactFormError & InternalFailure> = {};
 
     try {
       if (await this._isEmpty(data.clientFullName)) {
@@ -154,7 +154,6 @@ export class ValidationService {
       if (await this._isEmpty(data.subject)) {
         error.subject = GlobalErrorCodes.EMPTY_ERROR.value;
       } else if (!Subjects.includes(data.subject)) {
-        console.log(data.subject, Subjects, !Subjects.includes(data.subject));
         error.subject = ValidationErrorCodes.INVALID_SUBJECT.value;
       }
 
@@ -183,7 +182,7 @@ export class ValidationService {
   }
 
   async validateEmailChange(data) {
-    let error: Partial<EmailChangeError & InternalFailure> = {};
+    const error: Partial<EmailChangeError & InternalFailure> = {};
 
     try {
       if (await this._isEmpty(data.oldEmail)) {
@@ -215,7 +214,7 @@ export class ValidationService {
   }
 
   async validateUsernameChange(data) {
-    let error: Partial<UsernameChangeError & InternalFailure> = {};
+    const error: Partial<UsernameChangeError & InternalFailure> = {};
 
     try {
       if (await this._isEmpty(data.oldUsername)) {
@@ -250,7 +249,7 @@ export class ValidationService {
   }
 
   async validatePhoneNumberChange(data) {
-    let error: Partial<PhoneChangeError & InternalFailure> = {};
+    const error: Partial<PhoneChangeError & InternalFailure> = {};
 
     try {
       if (await this._isEmpty(data.oldPhoneNumber)) {
@@ -287,7 +286,7 @@ export class ValidationService {
   }
 
   async validatePasswordChange(data) {
-    let error: Partial<PasswordChangeError & InternalFailure> = {};
+    const error: Partial<PasswordChangeError & InternalFailure> = {};
 
     try {
       if (await this._isEmpty(data.oldPassword)) {
@@ -326,7 +325,7 @@ export class ValidationService {
   }
 
   async validateOptionalDataChange(data) {
-    let error: Partial<AddUpdateOptionalDataError & InternalFailure> = {};
+    const error: Partial<AddUpdateOptionalDataError & InternalFailure> = {};
 
     try {
       if (data.hasOwnProperty("firstName")) {
@@ -371,7 +370,7 @@ export class ValidationService {
   }
 
   async validateEmail(email) {
-    let error: Partial<EmailSubscriptionError & InternalFailure> = {};
+    const error: Partial<EmailSubscriptionError & InternalFailure> = {};
 
     try {
       if (await this._isEmpty(email)) {
@@ -395,7 +394,7 @@ export class ValidationService {
   }
 
   async validateRoom(data) {
-    let error: Partial<RoomError & InternalFailure> = {};
+    const error: Partial<RoomError & InternalFailure> = {};
 
     try {
       if (!data.membersCount) {
@@ -443,7 +442,7 @@ export class ValidationService {
   }
 
   private async _validateEmailLength(email) {
-    let splits = email.split("@");
+    const splits = email.split("@");
     if (splits[0] && splits[1]) {
       return (
         splits[0].length < Number.parseInt(RulesEnum.EMAIL_LOCAL_PART_MAX_LENGTH) + 1 &&
@@ -462,7 +461,7 @@ export class ValidationService {
 
   private async _isEmpty(obj) {
     if (obj !== undefined && obj !== null) {
-      let isString = typeof obj === "string" || obj instanceof String;
+      const isString = typeof obj === "string" || obj instanceof String;
       if ((typeof obj === "number" || obj instanceof Number) && obj !== 0) {
         return false;
       }

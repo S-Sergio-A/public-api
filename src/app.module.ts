@@ -46,7 +46,8 @@ export class AppModule {
         { path: "/public/phone", method: RequestMethod.PUT },
         { path: "/public/optional", method: RequestMethod.PUT },
         { path: "/public/photo", method: RequestMethod.PUT },
-        { path: "/public/refresh-session", method: RequestMethod.GET }
+        { path: "/public/refresh-session", method: RequestMethod.GET },
+        { path: "/public/user", method: RequestMethod.DELETE }
       );
   }
 }
