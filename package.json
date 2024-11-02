@@ -22,12 +22,12 @@
   },
   "dependencies": {
     "@nestjs/cli": "^7.6.0",
-    "@nestjs/common": "^7.6.17",
+    "@nestjs/common": "^7.6.18",
     "@nestjs/config": "^0.6.3",
-    "@nestjs/core": "^7.6.17",
-    "@nestjs/microservices": "^8.0.1",
-    "@nestjs/mongoose": "^8.0.0",
-    "@nestjs/platform-express": "^7.6.17",
+    "@nestjs/core": "^7.6.18",
+    "@nestjs/microservices": "^7.6.18",
+    "@nestjs/mongoose": "^7.2.4",
+    "@nestjs/platform-express": "^7.6.18",
     "@nestjs/schematics": "^7.3.1",
     "@nestjs/swagger": "^4.8.2",
     "@nestjs/throttler": "^1.1.4",
@@ -42,7 +42,7 @@
     "redis": "^3.1.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0",
+    "rxjs": "^6.6.6",
     "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
