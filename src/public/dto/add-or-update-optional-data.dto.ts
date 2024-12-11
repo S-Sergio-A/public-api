@@ -1,42 +1,37 @@
 import { IsDate, IsOptional, IsString, IsUrl } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { VALIDATION_ERROR_CODES_CONSTANT, ValidationErrorCodesEnum } from "@ssmovzh/chatterly-common-utils";
 
 export class AddOrUpdateOptionalDataDto {
   @ApiProperty({
-    example: "Petro",
-    description: "First name of the user.",
-    minLength: 1,
-    maxLength: 50
+    example: "John",
+    description: "First name of the user."
   })
-  @IsString()
+  @IsString({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_FIRST_NAME).msg })
   @IsOptional()
-  firstName: string;
+  firstName?: string;
 
   @ApiProperty({
-    example: "Shrekovenko",
-    description: "Last name of the user.",
-    minLength: 1,
-    maxLength: 50
+    example: "Doe",
+    description: "Last name of the user."
   })
-  @IsString()
+  @IsString({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_LAST_NAME).msg })
   @IsOptional()
-  lastName: string;
+  lastName?: string;
 
   @ApiProperty({
-    example: "02.10.2002",
-    description: "Birthday of the user.",
-    minLength: 10,
-    maxLength: 10
+    example: "01.01.1987",
+    description: "Birthday of the user."
   })
-  @IsDate()
+  @IsDate({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_BIRTHDAY).msg })
   @IsOptional()
-  birthday: string;
+  birthday?: string;
 
   @ApiProperty({
-    example: "https://somestock/som-cool-photo.jpg",
+    example: "https://via.placeholder.com/60",
     description: "URL to the photo of the user."
   })
   @IsUrl()
   @IsOptional()
-  photo: string;
+  photo?: string;
 }

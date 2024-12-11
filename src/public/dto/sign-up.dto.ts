@@ -1,6 +1,10 @@
 import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, Length, MinLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-import { VALIDATION_ERROR_CODES_CONSTANT, VALIDATION_RULES_CONSTANT, ValidationErrorCodesEnum } from "@ssmovzh/chatterly-common-utils";
+import {
+  VALIDATION_ERROR_CODES_CONSTANT,
+  VALIDATION_RULES_CONSTANT,
+  ValidationErrorCodesEnum
+} from "@ssmovzh/chatterly-common-utils";
 import { ValidationRulesEnum } from "@ssmovzh/chatterly-common-utils/enums";
 import { Match } from "~/modules/common";
 import { IsStrongPassword } from "~/modules/common/decorators/is-strong-password.decorator";
@@ -8,7 +12,7 @@ import { IsStrongPassword } from "~/modules/common/decorators/is-strong-password
 export class SignUpDto {
   @ApiProperty({
     example: "johndoe@example.com",
-    description: "The email of the User.",
+    description: "The email of the user.",
     uniqueItems: true,
     minLength: 6,
     maxLength: 254
@@ -20,7 +24,7 @@ export class SignUpDto {
 
   @ApiProperty({
     example: "johnDoe123",
-    description: "The username of the User.",
+    description: "The username of the user.",
     minLength: +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.USERNAME_MIN_LENGTH).value,
     maxLength: +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.USERNAME_MIN_LENGTH).value
   })
@@ -34,7 +38,7 @@ export class SignUpDto {
   username: string;
 
   @ApiProperty({
-    description: "The password of the User.",
+    description: "The password of the user.",
     minLength: +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_MIN_LENGTH).value,
     maxLength: +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_MAX_LENGTH).value
   })
@@ -49,7 +53,7 @@ export class SignUpDto {
   password: string;
 
   @ApiProperty({
-    description: "The password verification of the User.",
+    description: "The password verification of the user.",
     minLength: +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_MIN_LENGTH).value,
     maxLength: +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_MAX_LENGTH).value
   })
@@ -58,7 +62,7 @@ export class SignUpDto {
 
   @ApiProperty({
     example: "+1234567890",
-    description: "The phone number of the User.",
+    description: "The phone number of the user.",
     minLength: +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.TEL_NUM_MIN_LENGTH).value
   })
   @IsNotEmpty({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.EMPTY_FIELD).msg })

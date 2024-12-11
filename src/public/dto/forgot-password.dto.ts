@@ -5,7 +5,7 @@ import { VALIDATION_ERROR_CODES_CONSTANT, ValidationErrorCodesEnum } from "@ssmo
 export class ForgotPasswordDto {
   @ApiProperty({
     example: "johndoe@example.com",
-    description: "The email of the User.",
+    description: "The email of the user.",
     uniqueItems: true,
     minLength: 6,
     maxLength: 254
