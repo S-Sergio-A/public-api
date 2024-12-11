@@ -10,24 +10,20 @@ import {
   Put,
   Query,
   Req,
-  UseFilters,
+  UseGuards,
   UseInterceptors
 } from "@nestjs/common";
-import { ClientProxy, ClientProxyFactory, Transport } from "@nestjs/microservices";
-import { ApiBadRequestResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags
+} from "@nestjs/swagger";
 import { Express, Request } from "express";
 import { Observable } from "rxjs";
-import { RequestBodyAndInternalExceptionFilter } from "../exceptions/filters/RequestBodyAndInternal.exception-filter";
-import { ChangePhoneNumberValidationPipe } from "../pipes/validation/changePhoneNumber.validation.pipe";
-import { ChangePasswordValidationPipe } from "../pipes/validation/changePassword.validation.pipe";
-import { ChangeUsernameValidationPipe } from "../pipes/validation/changeUsername.validation.pipe";
-import { ValidationExceptionFilter } from "../exceptions/filters/Validation.exception-filter";
-import { RegistrationValidationPipe } from "../pipes/validation/registration.validation.pipe";
-import { OptionalDataValidationPipe } from "../pipes/validation/optionalData.validation.pipe";
-import { ChangeEmailValidationPipe } from "../pipes/validation/changeEmail.validation.pipe";
-import { ContactFormValidationPipe } from "../pipes/validation/contactForm.validation.pipe";
-import { LoginValidationPipe } from "../pipes/validation/login.validation.pipe";
-import { RoomValidationPipe } from "../pipes/validation/room.validation.pipe";
 import { LoginByEmailDto, LoginByPhoneNumberDto, LoginByUsernameDto } from "./dto/login.dto";
 import { AddOrUpdateOptionalDataDto } from "./dto/add-or-update-optional-data.dto";
 import { VerifyPasswordResetDto } from "./dto/verify-password-reset.dto";
@@ -40,37 +36,40 @@ import { ContactFormDto } from "./dto/contact-form.dto";
 import { SignUpDto } from "./dto/sign-up.dto";
 import { RoomDto } from "./dto/room.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { AuthGuard } from "~/modules/auth/auth.guard";
+import { Public } from "~/modules/common/constants";
 
-@UseFilters(new RequestBodyAndInternalExceptionFilter(), new ValidationExceptionFilter())
+@ApiTags("Public")
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller("public")
 export class PublicController {
-  client: ClientProxy;
+  client: Redis;
 
   constructor() {
-    this.client = ClientProxyFactory.create({
-      transport: Transport.REDIS,
-      options: {
-        url: `redis://${process.env.REDIS_DB_NAME}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_ENDPOINT}:${process.env.REDIS_PORT}`,
-        retryDelay: 3000,
-        retryAttempts: 10
-      }
+    this.client = new Redis({
+      host: process.env.REDIS_ENDPOINT,
+      port: parseInt(process.env.REDIS_PORT, 10),
+      password: process.env.REDIS_PASSWORD,
+      retryStrategy: (times) => Math.min(times * 50, 2000) // Retry logic
     });
   }
 
+  @Public()
   @Get("/invoke")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Invoke all microservices (for Heroku)." })
   @ApiOkResponse()
   async invokeAll(): Promise<Observable<void>> {
-    return this.client.send({ cmd: "invoke" }, {});
+    return this.client.publish({ cmd: "invoke" }, {});
   }
 
   @Post("/sign-up")
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: "Register a new user." })
+  @ApiOperation({ summary: "Create a new user." })
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
-  async register(@Body(new RegistrationValidationPipe()) createUserDto: SignUpDto): Promise<Observable<any>> {
+  async register(@Body() createUserDto: SignUpDto): Promise<Observable<any>> {
     return this.client.send({ cmd: "register" }, createUserDto);
   }
 
@@ -91,7 +90,12 @@ export class PublicController {
   async login(
     @Req() req: Request,
     @Headers() headers,
-    @Body(new LoginValidationPipe()) loginUserDto: LoginByEmailDto & LoginByUsernameDto & LoginByPhoneNumberDto & { rememberMe: boolean }
+    @Body()
+    loginUserDto: LoginByEmailDto &
+      LoginByUsernameDto &
+      LoginByPhoneNumberDto & {
+        rememberMe: boolean;
+      }
   ): Promise<Observable<any>> {
     if (await this.validateRequestAndHeaders(req, headers, false)) {
       return this.client.send(
@@ -168,7 +172,7 @@ export class PublicController {
   async changeEmail(
     @Req() req: Request,
     @Headers() headers,
-    @Body(new ChangeEmailValidationPipe()) changeEmailDto: ChangeEmailDto
+    @Body() changeEmailDto: ChangeEmailDto
   ): Promise<Observable<any> | HttpStatus> {
     if (await this.validateRequestAndHeaders(req, headers)) {
       return this.client.send(
@@ -193,7 +197,7 @@ export class PublicController {
   async changeUsername(
     @Req() req: Request,
     @Headers() headers,
-    @Body(new ChangeUsernameValidationPipe()) changeUsernameDto: ChangeUsernameDto
+    @Body() changeUsernameDto: ChangeUsernameDto
   ): Promise<Observable<any> | HttpStatus> {
     if (await this.validateRequestAndHeaders(req, headers)) {
       return this.client.send(
@@ -219,7 +223,7 @@ export class PublicController {
   async changePhoneNumber(
     @Req() req: Request,
     @Headers() headers,
-    @Body(new ChangePhoneNumberValidationPipe()) changePhoneNumberDto: ChangePhoneNumberDto
+    @Body() changePhoneNumberDto: ChangePhoneNumberDto
   ): Promise<Observable<any> | HttpStatus> {
     if (await this.validateRequestAndHeaders(req, headers)) {
       return this.client.send(
@@ -244,7 +248,7 @@ export class PublicController {
   async changePassword(
     @Req() req: Request,
     @Headers() headers,
-    @Body(new ChangePasswordValidationPipe()) changePasswordDto: ChangePasswordDto
+    @Body() changePasswordDto: ChangePasswordDto
   ): Promise<Observable<any> | HttpStatus> {
     if (await this.validateRequestAndHeaders(req, headers)) {
       return this.client.send(
@@ -282,10 +286,7 @@ export class PublicController {
   @ApiOperation({ summary: "Add or update an optional data (first and last name, birthday)." })
   @ApiOkResponse()
   @ApiBadRequestResponse()
-  async addOrChangeOptionalData(
-    @Req() req: Request,
-    @Body(new OptionalDataValidationPipe()) optionalDataDto: AddOrUpdateOptionalDataDto
-  ): Promise<Observable<any>> {
+  async addOrChangeOptionalData(@Req() req: Request, @Body() optionalDataDto: AddOrUpdateOptionalDataDto): Promise<Observable<any>> {
     return this.client.send({ cmd: "change-optional" }, { userId: req.user.userId, optionalDataDto });
   }
 
@@ -327,7 +328,7 @@ export class PublicController {
   @ApiOperation({ summary: "Handle an appeal." })
   @ApiOkResponse()
   @ApiBadRequestResponse()
-  async contact(@Body(new ContactFormValidationPipe()) contactFormDto: ContactFormDto): Promise<Observable<any>> {
+  async contact(@Body() contactFormDto: ContactFormDto): Promise<Observable<any>> {
     return this.client.send({ cmd: "handle-appeal" }, contactFormDto);
   }
 
@@ -352,7 +353,7 @@ export class PublicController {
   @ApiOperation({ summary: "Create a new room." })
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
-  async createRoom(@Req() req: Request, @Body(new RoomValidationPipe()) roomDto: RoomDto): Promise<Observable<any>> {
+  async createRoom(@Req() req: Request, @Body() roomDto: RoomDto): Promise<Observable<any>> {
     return this.client.send({ cmd: "create-room" }, { roomDto, userId: req.user.userId });
   }
 
@@ -423,7 +424,14 @@ export class PublicController {
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
   public async deleteRoom(@Query() query, @Headers() headers): Promise<Observable<any>> {
-    return this.client.send({ cmd: "delete-room" }, { rights: headers["rights"].split(","), roomId: query.roomId, userId: query.userId });
+    return this.client.send(
+      { cmd: "delete-room" },
+      {
+        rights: headers["rights"].split(","),
+        roomId: query.roomId,
+        userId: query.userId
+      }
+    );
   }
 
   @Put("/enter-room")

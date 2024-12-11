@@ -1,4 +1,4 @@
-import { IsDefined, IsNotEmpty, IsString, IsNumber, IsArray, IsBoolean, IsOptional, IsUrl } from "class-validator";
+import { IsArray, IsBoolean, IsDefined, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl } from "class-validator";
 import { Types } from "mongoose";
 import { ApiProperty } from "@nestjs/swagger";
 

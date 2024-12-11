@@ -1,19 +1,19 @@
 import { IsDefined, IsEmail, IsNotEmpty, IsString, Length } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { VALIDATION_ERROR_CODES_CONSTANT, ValidationErrorCodesEnum } from "@ssmovzh/chatterly-common-utils";
 
 export class ContactFormDto {
   @ApiProperty({
-    example: "petroshrekovenko@gmail.com",
-    description: "Email of the client.",
+    example: "johndoe@example.com",
+    description: "The email of the User.",
     uniqueItems: true,
     minLength: 6,
     maxLength: 254
   })
-  @IsDefined()
-  @IsNotEmpty()
-  @IsEmail()
-  @Length(6, 254)
-  readonly clientEmail: string;
+  @IsNotEmpty({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.EMPTY_FIELD).msg })
+  @IsEmail(null, { message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_EMAIL).msg })
+  @Length(6, 254, { message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_EMAIL_LENGTH).msg })
+  clientEmail: string;
 
   @ApiProperty({
     example: "Petro Shrekovenko.",
@@ -25,7 +25,7 @@ export class ContactFormDto {
   @IsNotEmpty()
   @IsString()
   @Length(2, 100)
-  readonly clientFullName: string;
+  clientFullName: string;
 
   @ApiProperty({
     example: "Careers | PR | Support.",
@@ -37,7 +37,7 @@ export class ContactFormDto {
   @IsNotEmpty()
   @IsString()
   @Length(8, 200)
-  readonly subject: string;
+  subject: string;
 
   @ApiProperty({
     description: "Message of the client.",
@@ -48,5 +48,5 @@ export class ContactFormDto {
   @IsNotEmpty()
   @IsString()
   @Length(1, 2000)
-  readonly message: string;
+  message: string;
 }

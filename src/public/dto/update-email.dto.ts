@@ -1,30 +1,30 @@
-import { IsDefined, IsEmail, IsNotEmpty, IsUUID, Length } from "class-validator";
+import { IsEmail, IsNotEmpty, IsUUID, Length } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { VALIDATION_ERROR_CODES_CONSTANT, ValidationErrorCodesEnum } from "@ssmovzh/chatterly-common-utils";
 
 export class ChangeEmailDto {
   @ApiProperty({
-    example: "oldpetroshrekovenko@mail.com",
-    description: "Old email of the user.",
+    example: "johndoe@example.com",
+    description: "The email of the User.",
     uniqueItems: true,
     minLength: 6,
     maxLength: 254
   })
-  @IsDefined()
-  @IsNotEmpty()
-  @IsEmail()
+  @IsNotEmpty({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.EMPTY_FIELD).msg })
+  @IsEmail(null, { message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_EMAIL).msg })
+  @Length(6, 254, { message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_EMAIL_LENGTH).msg })
   oldEmail: string;
 
   @ApiProperty({
-    example: "newpetroshrekovenko@mail.com",
-    description: "New email of the user.",
+    example: "johndoe@example.com",
+    description: "The email of the User.",
     uniqueItems: true,
     minLength: 6,
     maxLength: 254
   })
-  @IsDefined()
-  @IsNotEmpty()
-  @IsEmail()
-  @Length(6, 254)
+  @IsNotEmpty({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.EMPTY_FIELD).msg })
+  @IsEmail(null, { message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_EMAIL).msg })
+  @Length(6, 254, { message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_EMAIL_LENGTH).msg })
   newEmail: string;
 
   @ApiProperty({

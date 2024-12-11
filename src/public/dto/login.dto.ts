@@ -1,81 +1,95 @@
-import { IsDefined, IsEmail, IsNotEmpty, IsString, IsOptional } from "class-validator";
+import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, Length, MinLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { VALIDATION_ERROR_CODES_CONSTANT, VALIDATION_RULES_CONSTANT, ValidationErrorCodesEnum } from "@ssmovzh/chatterly-common-utils";
+import { ValidationRulesEnum } from "@ssmovzh/chatterly-common-utils/enums";
+import { IsStrongPassword } from "~/modules/common/decorators/is-strong-password.decorator";
 
 export class LoginByEmailDto {
   @ApiProperty({
-    example: "petroshrekovenko@gmail.com",
-    description: "Email of the user.",
+    example: "johndoe@example.com",
+    description: "The email of the User.",
     uniqueItems: true,
     minLength: 6,
     maxLength: 254
   })
-  @IsDefined()
-  @IsNotEmpty()
-  @IsEmail()
+  @IsNotEmpty({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.EMPTY_FIELD).msg })
+  @IsEmail(null, { message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_EMAIL).msg })
+  @Length(6, 254, { message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_EMAIL_LENGTH).msg })
   email: string;
 
   @ApiProperty({
-    example: "Secret password.",
-    description: "Password of the user.",
-    uniqueItems: true,
-    minLength: 8,
-    maxLength: 50
+    description: "The password of the User.",
+    minLength: +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_MIN_LENGTH).value,
+    maxLength: +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_MAX_LENGTH).value
   })
-  @IsDefined()
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_PASSWORD).msg })
+  @IsString({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_PASSWORD).msg })
+  @Length(
+    +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_MIN_LENGTH).value,
+    +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_MAX_LENGTH).value,
+    { message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_PASSWORD_LENGTH).msg }
+  )
+  @IsStrongPassword({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.WEAK_PASSWORD).msg })
   password: string;
 }
 
 export class LoginByUsernameDto {
   @ApiProperty({
-    example: "PetroShrekovenko",
-    description: "Username.",
-    uniqueItems: true,
-    minLength: 4,
-    maxLength: 30
+    example: "johnDoe123",
+    description: "The username of the User.",
+    minLength: +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.USERNAME_MIN_LENGTH).value,
+    maxLength: +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.USERNAME_MIN_LENGTH).value
   })
-  @IsDefined()
-  @IsNotEmpty()
-  @IsOptional()
-  @IsString()
+  @IsNotEmpty({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_USERNAME).msg })
+  @IsString({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_USERNAME).msg })
+  @Length(
+    +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.USERNAME_MIN_LENGTH).value,
+    +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.USERNAME_MAX_LENGTH).value,
+    { message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_USERNAME_LENGTH).msg }
+  )
   username: string;
 
   @ApiProperty({
-    example: "Secret password.",
-    description: "Password of the user.",
-    uniqueItems: true,
-    minLength: 8,
-    maxLength: 50
+    description: "The password of the User.",
+    minLength: +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_MIN_LENGTH).value,
+    maxLength: +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_MAX_LENGTH).value
   })
-  @IsDefined()
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_PASSWORD).msg })
+  @IsString({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_PASSWORD).msg })
+  @Length(
+    +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_MIN_LENGTH).value,
+    +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_MAX_LENGTH).value,
+    { message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_PASSWORD_LENGTH).msg }
+  )
+  @IsStrongPassword({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.WEAK_PASSWORD).msg })
   password: string;
 }
 
 export class LoginByPhoneNumberDto {
   @ApiProperty({
-    example: "+380509876543",
-    description: "Phone number of the user.",
-    uniqueItems: true,
-    minLength: 10,
-    maxLength: 20
+    example: "+1234567890",
+    description: "The phone number of the User.",
+    minLength: +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.TEL_NUM_MIN_LENGTH).value
   })
-  @IsDefined()
-  @IsNotEmpty()
-  @IsEmail()
+  @IsNotEmpty({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.EMPTY_FIELD).msg })
+  @IsPhoneNumber(null, { message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_TEL_NUM).msg })
+  @MinLength(+VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.TEL_NUM_MIN_LENGTH).value, {
+    message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_TEL_NUM_LENGTH).msg
+  })
   phoneNumber: string;
 
   @ApiProperty({
-    example: "Secret password.",
-    description: "Password of the user.",
-    uniqueItems: true,
-    minLength: 8,
-    maxLength: 50
+    description: "The password of the User.",
+    minLength: +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_MIN_LENGTH).value,
+    maxLength: +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_MAX_LENGTH).value
   })
-  @IsDefined()
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_PASSWORD).msg })
+  @IsString({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_PASSWORD).msg })
+  @Length(
+    +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_MIN_LENGTH).value,
+    +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_MAX_LENGTH).value,
+    { message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_PASSWORD_LENGTH).msg }
+  )
+  @IsStrongPassword({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.WEAK_PASSWORD).msg })
   password: string;
 }
