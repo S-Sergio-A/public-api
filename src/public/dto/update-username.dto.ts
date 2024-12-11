@@ -1,11 +1,7 @@
 import { IsNotEmpty, IsString, Length } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-import {
-  VALIDATION_ERROR_CODES_CONSTANT,
-  VALIDATION_RULES_CONSTANT,
-  ValidationErrorCodesEnum
-} from "@ssmovzh/chatterly-common-utils";
-import { ValidationRulesEnum } from "@ssmovzh/chatterly-common-utils/enums";
+import { VALIDATION_ERROR_CODES_CONSTANT, VALIDATION_RULES_CONSTANT, ValidationErrorCodesEnum } from "@ssmovzh/chatterly-common-utils";
+import { ValidationRulesEnum } from "@ssmovzh/chatterly-common-utils/dist/enums";
 import { VerificationBaseDto } from "~/public/dto/verification-base.dto";
 import { NotMatch } from "~/modules/common";
 
@@ -38,6 +34,8 @@ export class ChangeUsernameDto extends VerificationBaseDto {
     +VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.USERNAME_MAX_LENGTH).value,
     { message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_USERNAME_LENGTH).msg }
   )
-  @NotMatch("oldUsername", { message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.USERNAME_MATCHES_WITH_THE_PREVIOUS).msg })
-  newUsername: string
+  @NotMatch("oldUsername", {
+    message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.USERNAME_MATCHES_WITH_THE_PREVIOUS).msg
+  })
+  newUsername: string;
 }

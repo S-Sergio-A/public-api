@@ -1,6 +1,6 @@
 import { ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
-import { JWT_TOKEN_EXPIRATION } from "./system.constant";
+import { JWT_TOKEN_EXPIRATION } from "~/modules/common";
 
 export const AUTH_IMPORTS = [
   JwtModule.registerAsync({
@@ -8,6 +8,7 @@ export const AUTH_IMPORTS = [
     useFactory: () => ({
       secret: process.env.JWT_SECRET_KEY,
       signOptions: { expiresIn: JWT_TOKEN_EXPIRATION }
-    })
+    }),
+    global: true
   })
 ];

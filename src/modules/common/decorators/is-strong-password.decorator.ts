@@ -1,6 +1,6 @@
 import { registerDecorator, ValidationOptions } from "class-validator";
 import { VALIDATION_ERROR_CODES_CONSTANT, VALIDATION_RULES_CONSTANT, ValidationErrorCodesEnum } from "@ssmovzh/chatterly-common-utils";
-import { ValidationRulesEnum } from "@ssmovzh/chatterly-common-utils/enums";
+import { ValidationRulesEnum } from "@ssmovzh/chatterly-common-utils/dist/enums";
 
 /**
  * Decorator to validate password strength.

@@ -1,11 +1,7 @@
 import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, Length, MinLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-import {
-  VALIDATION_ERROR_CODES_CONSTANT,
-  VALIDATION_RULES_CONSTANT,
-  ValidationErrorCodesEnum
-} from "@ssmovzh/chatterly-common-utils";
-import { ValidationRulesEnum } from "@ssmovzh/chatterly-common-utils/enums";
+import { VALIDATION_ERROR_CODES_CONSTANT, VALIDATION_RULES_CONSTANT, ValidationErrorCodesEnum } from "@ssmovzh/chatterly-common-utils";
+import { ValidationRulesEnum } from "@ssmovzh/chatterly-common-utils/dist/enums";
 import { IsStrongPassword } from "~/modules/common/decorators/is-strong-password.decorator";
 
 export class LoginByEmailDto {

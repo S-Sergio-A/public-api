@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import * as amqp from "amqplib";
 import { ConfigService } from "@nestjs/config";
 import { LoggerService, QueueResponseInterface } from "~/modules/common";
-import { RabbitConfigInterface } from "@ssmovzh/chatterly-common-utils/interfaces";
+import { RabbitConfigInterface } from "@ssmovzh/chatterly-common-utils/dist/interfaces";
 
 @Injectable()
 export class RabbitProducerService {
@@ -16,7 +16,7 @@ export class RabbitProducerService {
     this.config = this.configService.get<RabbitConfigInterface>("rabbitConfig");
   }
 
-  async addTasks(queueName: string, tasks: any[]): Promise<void> {
+  async sendMessage(queueName: string, tasks: any[]): Promise<void> {
     try {
       const connection = await amqp.connect(this.config);
       const channel = await connection.createChannel();
