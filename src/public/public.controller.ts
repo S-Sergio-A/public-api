@@ -24,7 +24,7 @@ import {
 } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Express, Request } from "express";
-import { AuthDataInject, AuthDataInterface, Public } from "~/modules/common";
+import { AuthDataInject, Public } from "~/modules/common";
 import { AuthGuard } from "~/modules/auth/auth.guard";
 import { PublicService } from "~/public/public.service";
 import { LoginByEmailDto, LoginByPhoneNumberDto, LoginByUsernameDto } from "./dto/login.dto";
@@ -38,6 +38,7 @@ import { ChangeEmailDto } from "./dto/update-email.dto";
 import { ContactFormDto } from "./dto/contact-form.dto";
 import { SignUpDto } from "./dto/sign-up.dto";
 import { RoomDto } from "./dto/room.dto";
+import { AuthDataInterface } from "@ssmovzh/chatterly-common-utils/dist/interfaces";
 
 @ApiTags("Public")
 @ApiBearerAuth()
