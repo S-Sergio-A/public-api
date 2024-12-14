@@ -23,8 +23,8 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { AuthDataInterface, RightsEnum } from "@ssmovzh/chatterly-common-utils";
-import { Express, Request } from "express";
+import { AuthDataInterface, RabbitQueuesEnum, RightsEnum } from "@ssmovzh/chatterly-common-utils";
+import { Request } from "express";
 import { AuthDataInject, CustomHeadersEnum, Public } from "~/modules/common";
 import { AuthGuard } from "~/modules/auth/auth.guard";
 import { PublicService } from "~/public/public.service";
@@ -39,7 +39,6 @@ import { ChangeEmailDto } from "./dto/update-email.dto";
 import { ContactFormDto } from "./dto/contact-form.dto";
 import { SignUpDto } from "./dto/sign-up.dto";
 import { RoomDto } from "./dto/room.dto";
-import { RabbitQueuesEnum } from "@ssmovzh/chatterly-common-utils";
 
 @ApiTags("Public")
 @ApiBearerAuth()
@@ -281,7 +280,7 @@ export class PublicController {
   @ApiOperation({ summary: "Add or update a user profile photo." })
   @ApiOkResponse()
   @ApiBadRequestResponse()
-  async changePhoto(@AuthDataInject() authData: AuthDataInterface, @Body() photo: Express.Multer.File): Promise<any> {
+  async changePhoto(@AuthDataInject() authData: AuthDataInterface, @Body() photo: File): Promise<any> {
     return this.publicService.publishMessage(RabbitQueuesEnum.CHANGE_PHOTO, { userId: authData.clientId, photo });
   }
 
@@ -403,7 +402,7 @@ export class PublicController {
   @ApiOperation({ summary: "Add or update a room photo." })
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
-  async changeRoomPhoto(@Query() query: any, @Headers() headers: any, @Body() photo: Express.Multer.File): Promise<any> {
+  async changeRoomPhoto(@Query() query: any, @Headers() headers: any, @Body() photo: File): Promise<any> {
     return this.publicService.publishMessage(RabbitQueuesEnum.CHANGE_ROOM_PHOTO, {
       rights: headers[CustomHeadersEnum.X_RIGHTS].split(","),
       userId: query.userId,

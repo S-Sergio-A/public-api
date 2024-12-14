@@ -5,15 +5,16 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ConfigService } from "@nestjs/config";
 import { json, urlencoded } from "express";
 import helmet from "helmet";
-import { ApiResponseService, ResponseSourcesEnum } from "@ssmovzh/chatterly-common-utils";
-import { LoggerService } from "~/modules/common/logger";
-import { ExceptionsFilter } from "~/modules/common/filters";
+import { ApiResponseService, ExceptionsFilter, LoggerService, ResponseSourcesEnum } from "@ssmovzh/chatterly-common-utils";
 import { CustomHeadersEnum } from "~/modules/common";
 import { AppModule } from "./app.module";
 
 (async () => {
   const app = await NestFactory.create(AppModule);
   const apiPrefix = "api/v1";
+  const logger = await app.resolve(LoggerService); // Use resolve() for transient scoped providers
+  const configService = app.get(ConfigService);
+
   ApiResponseService.setSource(ResponseSourcesEnum.PUBLIC_API);
   app.setGlobalPrefix(apiPrefix);
 
@@ -30,15 +31,15 @@ import { AppModule } from "./app.module";
       transform: true
     })
   );
+
+  const clientUrl = configService.get<string>("app.clientUrl");
   app.enableCors({
-    origin: [process.env.FRONT_URL],
+    origin: [clientUrl],
     credentials: true,
     exposedHeaders: Object.values(CustomHeadersEnum),
     methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"]
   });
 
-  const logger = await app.resolve(LoggerService); // Use resolve() for transient scoped providers
-  const configService = app.get(ConfigService);
   const port = configService.get<number>("app.port");
 
   process.on("uncaughtException", (err) => {

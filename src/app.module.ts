@@ -4,10 +4,9 @@ import { APP_GUARD } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
 import { PublicModule } from "~/public/public.module";
 import { RabbitModule } from "~/modules/rabbit";
-import { HealthCheckModule } from "~/modules/health-check/health-check.module";
 import { defaultImports } from "~/modules/common/config";
 import { AuthModule } from "~/modules/auth/auth.module";
-import { LoggerModule } from "~/modules/common";
+import { HealthCheckModule, LoggerModule } from "@ssmovzh/chatterly-common-utils";
 
 @Module({
   imports: [

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { LoggerService } from "~/modules/common";
 import { RabbitProducerService } from "~/modules/rabbit/rabbit-producer.service";
+import { LoggerService } from "@ssmovzh/chatterly-common-utils";
 
 @Injectable()
 export class PublicService {
