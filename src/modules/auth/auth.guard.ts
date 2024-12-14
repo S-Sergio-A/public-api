@@ -5,6 +5,7 @@ import { JwtService } from "@nestjs/jwt";
 import { isArray } from "class-validator";
 import { IS_PUBLIC_KEY } from "~/modules/common/constants";
 import { extractTokenFromHeaderFunction, getAuthDataFunction } from "~/modules/auth/functions";
+import { CustomHeadersEnum } from "~/modules/common";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -24,7 +25,7 @@ export class AuthGuard implements CanActivate {
     const token = extractTokenFromHeaderFunction(request);
 
     const queryParams = url.parse(request.url, true).query;
-    let queueToken = queryParams["auth-token"] ?? null;
+    let queueToken = (queryParams[CustomHeadersEnum.X_ACCESS_TOKEN] || queryParams[CustomHeadersEnum.X_CLIENT_TOKEN]) ?? null;
 
     if (!token && !queueToken) {
       throw new UnauthorizedException("Wrong authentication token");

@@ -23,9 +23,9 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { AuthDataInterface } from "@ssmovzh/chatterly-common-utils/dist/interfaces";
+import { AuthDataInterface, RightsEnum } from "@ssmovzh/chatterly-common-utils";
 import { Express, Request } from "express";
-import { AuthDataInject, Public } from "~/modules/common";
+import { AuthDataInject, CustomHeadersEnum, Public } from "~/modules/common";
 import { AuthGuard } from "~/modules/auth/auth.guard";
 import { PublicService } from "~/public/public.service";
 import { LoginByEmailDto, LoginByPhoneNumberDto, LoginByUsernameDto } from "./dto/login.dto";
@@ -96,8 +96,8 @@ export class PublicController {
     if (await this._validateRequestAndHeaders(req, headers)) {
       return this.publicService.publishMessage(RabbitQueuesEnum.LOGIN, {
         ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"],
+        userAgent: headers[CustomHeadersEnum.USER_AGENT],
+        fingerprint: headers[CustomHeadersEnum.X_FINGERPRINT],
         loginUserDto
       });
     }
@@ -116,8 +116,8 @@ export class PublicController {
     if (await this._validateRequestAndHeaders(req, headers)) {
       return this.publicService.publishMessage(RabbitQueuesEnum.RESET_PASSWORD, {
         ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"],
+        userAgent: headers[CustomHeadersEnum.USER_AGENT],
+        fingerprint: headers[CustomHeadersEnum.X_FINGERPRINT],
         forgotPasswordDto
       });
     }
@@ -143,11 +143,11 @@ export class PublicController {
   async logout(@AuthDataInject() authData: AuthDataInterface, @Req() req: Request, @Headers() headers: any): Promise<any | HttpStatus> {
     if (await this._validateRequestAndHeaders(req, headers)) {
       return this.publicService.publishMessage(RabbitQueuesEnum.LOG_OUT, {
-        accessToken: headers["access-token"],
+        accessToken: headers[CustomHeadersEnum.X_ACCESS_TOKEN],
         ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"],
-        refreshToken: headers["refresh-token"],
+        userAgent: headers[CustomHeadersEnum.USER_AGENT],
+        fingerprint: headers[CustomHeadersEnum.X_FINGERPRINT],
+        refreshToken: headers[CustomHeadersEnum.X_REFRESH_TOKEN],
         userId: authData.clientId
       });
     }
@@ -169,8 +169,8 @@ export class PublicController {
       return this.publicService.publishMessage(RabbitQueuesEnum.CHANGE_EMAIL, {
         userId: authData.clientId,
         ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"],
+        userAgent: headers[CustomHeadersEnum.USER_AGENT],
+        fingerprint: headers[CustomHeadersEnum.X_FINGERPRINT],
         changeEmailDto
       });
     }
@@ -192,8 +192,8 @@ export class PublicController {
       return this.publicService.publishMessage(RabbitQueuesEnum.CHANGE_USERNAME, {
         userId: authData.clientId,
         ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"],
+        userAgent: headers[CustomHeadersEnum.USER_AGENT],
+        fingerprint: headers[CustomHeadersEnum.X_FINGERPRINT],
         changeUsernameDto
       });
     }
@@ -216,8 +216,8 @@ export class PublicController {
       return this.publicService.publishMessage(RabbitQueuesEnum.CHANGE_TEL, {
         userId: authData.clientId,
         ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"],
+        userAgent: headers[CustomHeadersEnum.USER_AGENT],
+        fingerprint: headers[CustomHeadersEnum.X_FINGERPRINT],
         changePhoneNumberDto
       });
     }
@@ -239,8 +239,8 @@ export class PublicController {
       return this.publicService.publishMessage(RabbitQueuesEnum.CHANGE_PASSWORD, {
         userId: authData.clientId,
         ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"],
+        userAgent: headers[CustomHeadersEnum.USER_AGENT],
+        fingerprint: headers[CustomHeadersEnum.X_FINGERPRINT],
         changePasswordDto
       });
     }
@@ -297,11 +297,11 @@ export class PublicController {
   ): Promise<any | HttpStatus> {
     if (await this._validateRequestAndHeaders(req, headers)) {
       return this.publicService.publishMessage(RabbitQueuesEnum.REFRESH_SESSION, {
-        accessToken: headers["access-token"],
+        accessToken: headers[CustomHeadersEnum.X_ACCESS_TOKEN],
         ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"],
-        refreshToken: headers["refresh-token"],
+        userAgent: headers[CustomHeadersEnum.USER_AGENT],
+        fingerprint: headers[CustomHeadersEnum.X_FINGERPRINT],
+        refreshToken: headers[CustomHeadersEnum.X_REFRESH_TOKEN],
         userId: authData.clientId
       });
     }
@@ -327,8 +327,8 @@ export class PublicController {
     if (await this._validateRequestAndHeaders(req, headers)) {
       return this.publicService.publishMessage(RabbitQueuesEnum.GENERATE_CLIENT_TOKEN, {
         ip: req.socket.remoteAddress,
-        userAgent: headers["user-agent"],
-        fingerprint: headers["fingerprint"]
+        userAgent: headers[CustomHeadersEnum.USER_AGENT],
+        fingerprint: headers[CustomHeadersEnum.X_FINGERPRINT]
       });
     }
 
@@ -390,7 +390,7 @@ export class PublicController {
   @ApiBadRequestResponse()
   async updateRoom(@Query() query: any, @Headers() headers: any, @Body() roomDto: Partial<RoomDto>): Promise<any> {
     return this.publicService.publishMessage(RabbitQueuesEnum.UPDATE_ROOM, {
-      rights: headers["rights"].split(","),
+      rights: headers[CustomHeadersEnum.X_RIGHTS].split(","),
       userId: query.userId,
       roomId: query.roomId,
       roomDto
@@ -405,7 +405,7 @@ export class PublicController {
   @ApiBadRequestResponse()
   async changeRoomPhoto(@Query() query: any, @Headers() headers: any, @Body() photo: Express.Multer.File): Promise<any> {
     return this.publicService.publishMessage(RabbitQueuesEnum.CHANGE_ROOM_PHOTO, {
-      rights: headers["rights"].split(","),
+      rights: headers[CustomHeadersEnum.X_RIGHTS].split(","),
       userId: query.userId,
       roomId: query.roomId,
       photo
@@ -419,7 +419,7 @@ export class PublicController {
   @ApiBadRequestResponse()
   public async deleteRoom(@Query() query: any, @Headers() headers: any): Promise<any> {
     return this.publicService.publishMessage(RabbitQueuesEnum.DELETE_ROOM, {
-      rights: headers["rights"].split(","),
+      rights: headers[CustomHeadersEnum.X_RIGHTS].split(","),
       roomId: query.roomId,
       userId: query.userId
     });
@@ -444,7 +444,7 @@ export class PublicController {
   @ApiBadRequestResponse()
   public async addUserToRoom(@Query() query: any, @Headers() headers: any, @Body() { userRights }): Promise<any> {
     return this.publicService.publishMessage(RabbitQueuesEnum.ADD_USER, {
-      rights: headers["rights"].split(","),
+      rights: headers[CustomHeadersEnum.X_RIGHTS].split(","),
       userId: query.userId,
       roomId: query.roomId,
       newUserIdentifier: query.newUserIdentifier,
@@ -463,7 +463,7 @@ export class PublicController {
     @Headers() headers: any
   ): Promise<any> {
     return this.publicService.publishMessage(RabbitQueuesEnum.DELETE_USER, {
-      rights: headers["rights"].split(","),
+      rights: headers[CustomHeadersEnum.X_RIGHTS].split(","),
       userId: authData.clientId,
       userIdToBeDeleted: query.userId,
       roomId: query.roomId,
@@ -479,10 +479,10 @@ export class PublicController {
   public async changeUserRightsInRoom(
     @Query() query: any,
     @Headers() headers: any,
-    @Body() { newRights }: { newRights: string[] }
+    @Body() { newRights }: { newRights: RightsEnum[] }
   ): Promise<any> {
     return this.publicService.publishMessage(RabbitQueuesEnum.CHANGE_USER_RIGHTS, {
-      rights: headers["rights"].split(","),
+      rights: headers[CustomHeadersEnum.X_RIGHTS].split(","),
       performerUserId: query.performerUserId,
       targetUserId: query.targetUserId,
       roomId: query.roomId,
@@ -521,8 +521,8 @@ export class PublicController {
   }
 
   private async _validateRequestAndHeaders(req: Request, headers: any) {
-    const fingerprint = headers["fingerprint"];
-    const userAgent = headers["user-agent"];
+    const fingerprint = headers[CustomHeadersEnum.X_FINGERPRINT];
+    const userAgent = headers[CustomHeadersEnum.USER_AGENT];
     const ip = req.socket.remoteAddress;
     return !!fingerprint && !!userAgent && !!ip;
   }

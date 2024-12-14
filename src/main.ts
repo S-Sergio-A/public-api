@@ -4,11 +4,11 @@ import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { json, urlencoded } from "express";
 import helmet from "helmet";
-import { ApiResponseService } from "@ssmovzh/chatterly-common-utils/dist/services";
-import { ResponseSourcesEnum } from "@ssmovzh/chatterly-common-utils/dist/enums";
+import { ApiResponseService, ResponseSourcesEnum } from "@ssmovzh/chatterly-common-utils";
 import { LoggerService } from "~/modules/common/logger";
 import { ExceptionsFilter } from "~/modules/common/filters";
 import { AppModule } from "./app.module";
+import { CustomHeadersEnum } from "~/modules/common";
 
 (async () => {
   const app = await NestFactory.create(AppModule);
@@ -32,7 +32,7 @@ import { AppModule } from "./app.module";
   app.enableCors({
     origin: [process.env.FRONT_URL],
     credentials: true,
-    exposedHeaders: ["X-Access-Token", "X-Refresh-Token", "X-Client-Token", "X-Country", "Content-Type"],
+    exposedHeaders: Object.values(CustomHeadersEnum),
     methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"]
   });
 
