@@ -2,7 +2,6 @@ import { Module } from "@nestjs/common";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
-import { PublicController } from "~/public/public.controller";
 import { PublicModule } from "~/public/public.module";
 import { RabbitModule } from "~/modules/rabbit";
 import { HealthCheckModule } from "~/modules/health-check/health-check.module";
