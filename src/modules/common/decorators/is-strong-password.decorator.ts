@@ -1,5 +1,5 @@
 import { registerDecorator, ValidationOptions } from "class-validator";
-import { VALIDATION_ERROR_CODES_CONSTANT, VALIDATION_RULES_CONSTANT, ValidationErrorCodesEnum } from "@ssmovzh/chatterly-common-utils";
+import { VALIDATION_ERROR_CODES, VALIDATION_RULES, ValidationErrorCodesEnum } from "@ssmovzh/chatterly-common-utils";
 import { ValidationRulesEnum } from "@ssmovzh/chatterly-common-utils";
 
 /**
@@ -17,12 +17,10 @@ export function IsStrongPassword(validationOptions?: ValidationOptions) {
       validator: {
         validate(value: any) {
           // Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character
-          return (
-            typeof value === "string" && (VALIDATION_RULES_CONSTANT.get(ValidationRulesEnum.PASSWORD_REGEX).value as RegExp).test(value)
-          );
+          return typeof value === "string" && (VALIDATION_RULES.get(ValidationRulesEnum.PASSWORD_REGEX).value as RegExp).test(value);
         },
         defaultMessage() {
-          return VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.WEAK_PASSWORD).msg;
+          return VALIDATION_ERROR_CODES.get(ValidationErrorCodesEnum.WEAK_PASSWORD).msg;
         }
       }
     });

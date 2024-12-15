@@ -1,13 +1,13 @@
 import { IsDate, IsOptional, IsString, IsUrl } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-import { VALIDATION_ERROR_CODES_CONSTANT, ValidationErrorCodesEnum } from "@ssmovzh/chatterly-common-utils";
+import { VALIDATION_ERROR_CODES, ValidationErrorCodesEnum } from "@ssmovzh/chatterly-common-utils";
 
 export class AddOrUpdateOptionalDataDto {
   @ApiProperty({
     example: "John",
     description: "First name of the user."
   })
-  @IsString({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_FIRST_NAME).msg })
+  @IsString({ message: VALIDATION_ERROR_CODES.get(ValidationErrorCodesEnum.INVALID_FIRST_NAME).msg })
   @IsOptional()
   firstName?: string;
 
@@ -15,7 +15,7 @@ export class AddOrUpdateOptionalDataDto {
     example: "Doe",
     description: "Last name of the user."
   })
-  @IsString({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_LAST_NAME).msg })
+  @IsString({ message: VALIDATION_ERROR_CODES.get(ValidationErrorCodesEnum.INVALID_LAST_NAME).msg })
   @IsOptional()
   lastName?: string;
 
@@ -23,7 +23,7 @@ export class AddOrUpdateOptionalDataDto {
     example: "01.01.1987",
     description: "Birthday of the user."
   })
-  @IsDate({ message: VALIDATION_ERROR_CODES_CONSTANT.get(ValidationErrorCodesEnum.INVALID_BIRTHDAY).msg })
+  @IsDate({ message: VALIDATION_ERROR_CODES.get(ValidationErrorCodesEnum.INVALID_BIRTHDAY).msg })
   @IsOptional()
   birthday?: string;
 
