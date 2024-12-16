@@ -1,6 +1,6 @@
 import * as process from "process";
 import * as dotenv from "dotenv";
-import { AppConfigInterface, MongoConfigInterface, RabbitConfigInterface, TokenConfigInterface } from "@ssmovzh/chatterly-common-utils";
+import { AppConfigInterface, RabbitConfigInterface, TokenConfigInterface } from "@ssmovzh/chatterly-common-utils";
 
 dotenv.config();
 
@@ -10,12 +10,6 @@ export default () => ({
     environment: process.env.ENVIRONMENT,
     clientUrl: process.env.CLIENT_URL
   } as AppConfigInterface,
-  mongo: {
-    username: process.env.MONGO_USERNAME,
-    password: process.env.MONGO_PASSWORD,
-    clusterUrl: process.env.MONGO_CLUSTER_URL,
-    database: process.env.MONGO_DATABASE_NAME
-  } as MongoConfigInterface,
   rabbitConfig: {
     protocol: "amqp",
     hostname: process.env.RABBIT_HOST,
