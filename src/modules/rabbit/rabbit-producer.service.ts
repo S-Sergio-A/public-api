@@ -17,7 +17,15 @@ export class RabbitProducerService {
   }
 
   async sendMessage(queueName: string, data: any): Promise<any> {
-    const connection = await connect(this.config);
+    const connection = await connect(
+      this.config?.uri || {
+        protocol: this.config.protocol,
+        hostname: this.config.hostname,
+        port: this.config.port,
+        username: this.config.username,
+        password: this.config.password
+      }
+    );
     const channel = await connection.createChannel();
 
     const replyQueue = await channel.assertQueue("", { exclusive: true }); // Temporary reply queue

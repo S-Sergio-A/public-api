@@ -15,7 +15,9 @@ export default () => ({
     hostname: process.env.RABBIT_HOST,
     port: process.env.RABBIT_PORT ? +process.env.RABBIT_PORT : 5672,
     username: process.env.RABBIT_USERNAME,
-    password: process.env.RABBIT_PASSWORD
+    password: process.env.RABBIT_PASSWORD,
+    uri: process.env.RABBIT_URI,
+    apiKey: process.env.RABBIT_API_KEY
   } as RabbitConfigInterface,
   jwt: {
     secret: process.env.JWT_SECRET,
