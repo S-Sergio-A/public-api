@@ -11,7 +11,7 @@ ARG NPM_TOKEN
 RUN echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
 
 # Install dependencies
-RUN npm install --production
+RUN npm install
 RUN npm i @nestjs/cli -g
 
 # Copy the source code
