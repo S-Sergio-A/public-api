@@ -7,17 +7,15 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install --production
-
-# Copy the source code
-COPY . .
-
 ARG NPM_TOKEN
 RUN echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
 
-RUN npm i
+# Install dependencies
+RUN npm install --production
 RUN npm i @nestjs/cli -g
+
+# Copy the source code
+COPY . .
 
 # Build the application
 RUN npm run build
