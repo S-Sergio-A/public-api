@@ -14,7 +14,7 @@ export class SignUpDto {
     maxLength: 254
   })
   @IsNotEmpty({ message: VALIDATION_ERROR_CODES.get(ValidationErrorCodesEnum.EMPTY_FIELD).msg })
-  @IsEmail(null, { message: VALIDATION_ERROR_CODES.get(ValidationErrorCodesEnum.INVALID_EMAIL).msg })
+  @IsEmail({}, { message: VALIDATION_ERROR_CODES.get(ValidationErrorCodesEnum.INVALID_EMAIL).msg })
   @Length(6, 254, { message: VALIDATION_ERROR_CODES.get(ValidationErrorCodesEnum.INVALID_EMAIL_LENGTH).msg })
   email: string;
 

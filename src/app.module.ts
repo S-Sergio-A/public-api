@@ -7,10 +7,14 @@ import { RabbitModule } from "~/modules/rabbit";
 import { defaultImports } from "~/modules/common/config";
 import { AuthModule } from "~/modules/auth/auth.module";
 import { HealthCheckModule, LoggerModule } from "@ssmovzh/chatterly-common-utils";
+import { MulterModule } from "@nestjs/platform-express";
 
 @Module({
   imports: [
     ...defaultImports,
+    MulterModule.register({
+      dest: "./uploads"
+    }),
     ThrottlerModule.forRoot({
       throttlers: [
         {

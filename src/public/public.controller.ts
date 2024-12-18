@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -10,8 +11,7 @@ import {
   Put,
   Query,
   Req,
-  UseGuards,
-  UseInterceptors
+  UseGuards
 } from "@nestjs/common";
 import {
   ApiBadRequestResponse,
@@ -22,10 +22,9 @@ import {
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
-import { FileInterceptor } from "@nestjs/platform-express";
-import { AuthDataInterface, RabbitQueuesEnum, RightsEnum } from "@ssmovzh/chatterly-common-utils";
+import { AuthDataInterface, CustomHeadersEnum, RabbitQueuesEnum, RightsEnum } from "@ssmovzh/chatterly-common-utils";
 import { Request } from "express";
-import { AuthDataInject, CustomHeadersEnum, Public } from "~/modules/common";
+import { AuthDataInject, Public } from "~/modules/common";
 import { AuthGuard } from "~/modules/auth/auth.guard";
 import { PublicService } from "~/public/public.service";
 import { LoginByEmailDto, LoginByPhoneNumberDto, LoginByUsernameDto } from "./dto/login.dto";
@@ -61,6 +60,7 @@ export class PublicController {
   @ApiOperation({ summary: "Create a new user." })
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
+  @Public()
   async register(@Body() createUserDto: SignUpDto): Promise<any> {
     return this.publicService.publishMessage(RabbitQueuesEnum.SIGN_UP, createUserDto);
   }
@@ -82,6 +82,7 @@ export class PublicController {
   @ApiOperation({ summary: "Log in the user." })
   @ApiOkResponse()
   @ApiBadRequestResponse()
+  @Public()
   async login(
     @Req() req: Request,
     @Headers() headers: any,
@@ -147,7 +148,7 @@ export class PublicController {
         userAgent: headers[CustomHeadersEnum.USER_AGENT],
         fingerprint: headers[CustomHeadersEnum.X_FINGERPRINT],
         refreshToken: headers[CustomHeadersEnum.X_REFRESH_TOKEN],
-        userId: authData.clientId
+        userId: authData.userId
       });
     }
     return HttpStatus.BAD_REQUEST;
@@ -166,7 +167,7 @@ export class PublicController {
   ): Promise<any | HttpStatus> {
     if (await this._validateRequestAndHeaders(req, headers)) {
       return this.publicService.publishMessage(RabbitQueuesEnum.CHANGE_EMAIL, {
-        userId: authData.clientId,
+        userId: authData.userId,
         ip: req.socket.remoteAddress,
         userAgent: headers[CustomHeadersEnum.USER_AGENT],
         fingerprint: headers[CustomHeadersEnum.X_FINGERPRINT],
@@ -189,7 +190,7 @@ export class PublicController {
   ): Promise<any | HttpStatus> {
     if (await this._validateRequestAndHeaders(req, headers)) {
       return this.publicService.publishMessage(RabbitQueuesEnum.CHANGE_USERNAME, {
-        userId: authData.clientId,
+        userId: authData.userId,
         ip: req.socket.remoteAddress,
         userAgent: headers[CustomHeadersEnum.USER_AGENT],
         fingerprint: headers[CustomHeadersEnum.X_FINGERPRINT],
@@ -213,7 +214,7 @@ export class PublicController {
   ): Promise<any | HttpStatus> {
     if (await this._validateRequestAndHeaders(req, headers)) {
       return this.publicService.publishMessage(RabbitQueuesEnum.CHANGE_TEL, {
-        userId: authData.clientId,
+        userId: authData.userId,
         ip: req.socket.remoteAddress,
         userAgent: headers[CustomHeadersEnum.USER_AGENT],
         fingerprint: headers[CustomHeadersEnum.X_FINGERPRINT],
@@ -236,7 +237,7 @@ export class PublicController {
   ): Promise<any | HttpStatus> {
     if (await this._validateRequestAndHeaders(req, headers)) {
       return this.publicService.publishMessage(RabbitQueuesEnum.CHANGE_PASSWORD, {
-        userId: authData.clientId,
+        userId: authData.userId,
         ip: req.socket.remoteAddress,
         userAgent: headers[CustomHeadersEnum.USER_AGENT],
         fingerprint: headers[CustomHeadersEnum.X_FINGERPRINT],
@@ -253,7 +254,7 @@ export class PublicController {
   @ApiBadRequestResponse()
   async verifyPrimaryDataChange(@AuthDataInject() authData: AuthDataInterface, @Query() query: any): Promise<any> {
     return this.publicService.publishMessage(RabbitQueuesEnum.VERIFY_ACCOUNT_UPDATE, {
-      userId: authData.clientId,
+      userId: authData.userId,
       verification: query.verification,
       dataType: query.dataType
     });
@@ -269,19 +270,25 @@ export class PublicController {
     @Body() optionalDataDto: AddOrUpdateOptionalDataDto
   ): Promise<any> {
     return this.publicService.publishMessage(RabbitQueuesEnum.CHANGE_DETAILS, {
-      userId: authData.clientId,
+      userId: authData.userId,
       optionalDataDto
     });
   }
 
   @Put("/photo")
-  @UseInterceptors(FileInterceptor("file"))
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Add or update a user profile photo." })
   @ApiOkResponse()
   @ApiBadRequestResponse()
-  async changePhoto(@AuthDataInject() authData: AuthDataInterface, @Body() photo: File): Promise<any> {
-    return this.publicService.publishMessage(RabbitQueuesEnum.CHANGE_PHOTO, { userId: authData.clientId, photo });
+  async changePhoto(@AuthDataInject() authData: AuthDataInterface, @Body("photo") photo: string): Promise<any> {
+    if (!photo) {
+      throw new BadRequestException("Photo is missing");
+    }
+
+    return this.publicService.publishMessage(RabbitQueuesEnum.CHANGE_PHOTO, {
+      userId: authData.userId,
+      photo
+    });
   }
 
   @Get("/refresh-session")
@@ -289,6 +296,7 @@ export class PublicController {
   @ApiOperation({ summary: "Refresh the public session." })
   @ApiOkResponse()
   @ApiBadRequestResponse()
+  @Public()
   async refreshAccessToken(
     @AuthDataInject() authData: AuthDataInterface,
     @Req() req: Request,
@@ -301,7 +309,7 @@ export class PublicController {
         userAgent: headers[CustomHeadersEnum.USER_AGENT],
         fingerprint: headers[CustomHeadersEnum.X_FINGERPRINT],
         refreshToken: headers[CustomHeadersEnum.X_REFRESH_TOKEN],
-        userId: authData.clientId
+        userId: authData.userId
       });
     }
 
@@ -313,6 +321,7 @@ export class PublicController {
   @ApiOperation({ summary: "Handle an appeal." })
   @ApiOkResponse()
   @ApiBadRequestResponse()
+  @Public()
   async contact(@Body() contactFormDto: ContactFormDto): Promise<any> {
     return this.publicService.publishMessage(RabbitQueuesEnum.HANDLE_APPEAL, contactFormDto);
   }
@@ -322,6 +331,7 @@ export class PublicController {
   @ApiOperation({ summary: "Generate a publicService access-token." })
   @ApiOkResponse()
   @ApiBadRequestResponse()
+  @Public()
   async generateToken(@Req() req: Request, @Headers() headers: any): Promise<any | HttpStatus> {
     if (await this._validateRequestAndHeaders(req, headers)) {
       return this.publicService.publishMessage(RabbitQueuesEnum.GENERATE_CLIENT_TOKEN, {
@@ -340,7 +350,7 @@ export class PublicController {
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
   async createRoom(@AuthDataInject() authData: AuthDataInterface, @Body() roomDto: RoomDto): Promise<any> {
-    return this.publicService.publishMessage(RabbitQueuesEnum.CREATE_ROOM, { roomDto, userId: authData.clientId });
+    return this.publicService.publishMessage(RabbitQueuesEnum.CREATE_ROOM, { ...roomDto, userId: authData.userId });
   }
 
   @Get("/recent-message")
@@ -367,7 +377,7 @@ export class PublicController {
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
   async getAllUserRooms(@AuthDataInject() authData: AuthDataInterface): Promise<any> {
-    return this.publicService.publishMessage(RabbitQueuesEnum.GET_ALL_USER_ROOMS, { userId: authData.clientId });
+    return this.publicService.publishMessage(RabbitQueuesEnum.GET_ALL_USER_ROOMS, { userId: authData.userId });
   }
 
   @Get("/room/:name")
@@ -397,12 +407,15 @@ export class PublicController {
   }
 
   @Put("/room-photo")
-  @UseInterceptors(FileInterceptor("file"))
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Add or update a room photo." })
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
-  async changeRoomPhoto(@Query() query: any, @Headers() headers: any, @Body() photo: File): Promise<any> {
+  async changeRoomPhoto(@Query() query: any, @Headers() headers: any, @Body("photo") photo: string): Promise<any> {
+    if (!photo) {
+      throw new BadRequestException("Photo is missing");
+    }
+
     return this.publicService.publishMessage(RabbitQueuesEnum.CHANGE_ROOM_PHOTO, {
       rights: headers[CustomHeadersEnum.X_RIGHTS].split(","),
       userId: query.userId,
@@ -463,7 +476,7 @@ export class PublicController {
   ): Promise<any> {
     return this.publicService.publishMessage(RabbitQueuesEnum.DELETE_USER, {
       rights: headers[CustomHeadersEnum.X_RIGHTS].split(","),
-      userId: authData.clientId,
+      userId: authData.userId,
       userIdToBeDeleted: query.userId,
       roomId: query.roomId,
       type: query.type

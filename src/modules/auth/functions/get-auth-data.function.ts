@@ -1,22 +1,23 @@
 import * as process from "node:process";
 import { UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { JwtPayloadInterface } from "@ssmovzh/chatterly-common-utils";
+import { JwtPayloadInterface, TokenInterface } from "@ssmovzh/chatterly-common-utils";
 
-export async function getAuthDataFunction(options: { token: string; jwtService: JwtService }) {
+export async function getAuthDataFunction(options: { tokens: TokenInterface; jwtService: JwtService }) {
   try {
-    const { token, jwtService } = options;
+    const { tokens, jwtService } = options;
 
-    const payload: JwtPayloadInterface = await jwtService.verifyAsync(token, {
-      secret: process.env.JWT_SECRET_KEY
+    const payload: JwtPayloadInterface = await jwtService.verifyAsync(tokens.accessToken, {
+      secret: process.env.JWT_SECRET
     });
 
-    if (!payload || !payload.ip || !payload.clientId) {
+    if (!payload || (!payload.userId && !payload.clientId)) {
       throw new UnauthorizedException("Invalid token");
     }
 
     return {
       ip: payload.ip,
+      userId: payload.userId,
       clientId: payload.clientId
     };
   } catch (error) {

@@ -42,25 +42,29 @@ export class RoomDto {
   @ApiProperty({
     description: "The array of members IDs."
   })
+  @IsOptional()
   @IsString({ each: true })
-  usersID: string[];
+  usersID?: string[] = [];
 
   @IsArray()
   @ApiProperty({
     description: "The array of messages IDs."
   })
+  @IsOptional()
   @IsString({ each: true })
-  messagesID: string[];
+  messagesID?: string[] = [];
 
   @IsNumber()
   @ApiProperty({
     description: "The quantity of members."
   })
-  membersCount: number;
+  @IsOptional()
+  membersCount?: number;
 
   @IsString()
   @ApiProperty({
     description: "The date of room creation."
   })
-  createdAt: string;
+  @IsOptional()
+  createdAt?: string = new Date().toISOString();
 }

@@ -23,7 +23,7 @@ export class AddOrUpdateOptionalDataDto {
     example: "01.01.1987",
     description: "Birthday of the user."
   })
-  @IsDate({ message: VALIDATION_ERROR_CODES.get(ValidationErrorCodesEnum.INVALID_BIRTHDAY).msg })
+  @IsString({ message: VALIDATION_ERROR_CODES.get(ValidationErrorCodesEnum.INVALID_BIRTHDAY).msg })
   @IsOptional()
   birthday?: string;
 

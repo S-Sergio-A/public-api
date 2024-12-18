@@ -1,11 +1,8 @@
-import * as url from "url";
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
-import { isArray } from "class-validator";
 import { IS_PUBLIC_KEY } from "~/modules/common/constants";
 import { extractTokenFromHeaderFunction, getAuthDataFunction } from "~/modules/auth/functions";
-import { CustomHeadersEnum } from "~/modules/common";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -22,22 +19,15 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const token = extractTokenFromHeaderFunction(request);
+    const tokens = extractTokenFromHeaderFunction(request);
 
-    const queryParams = url.parse(request.url, true).query;
-    let queueToken = (queryParams[CustomHeadersEnum.X_ACCESS_TOKEN] || queryParams[CustomHeadersEnum.X_CLIENT_TOKEN]) ?? null;
-
-    if (!token && !queueToken) {
+    if (!tokens || !tokens.accessToken || !tokens.refreshToken) {
       throw new UnauthorizedException("Wrong authentication token");
-    }
-
-    if (isArray(queueToken)) {
-      queueToken = queueToken[0];
     }
 
     try {
       request.body.authData = await getAuthDataFunction({
-        token: token ?? queueToken,
+        tokens,
         jwtService: this.jwtService
       });
     } catch (error) {

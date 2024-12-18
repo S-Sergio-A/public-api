@@ -5,8 +5,13 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ConfigService } from "@nestjs/config";
 import { json, urlencoded } from "express";
 import helmet from "helmet";
-import { ApiResponseService, ExceptionsFilter, LoggerService, ResponseSourcesEnum } from "@ssmovzh/chatterly-common-utils";
-import { CustomHeadersEnum } from "~/modules/common";
+import {
+  ApiResponseService,
+  CustomHeadersEnum,
+  ExceptionsFilter,
+  LoggerService,
+  ResponseSourcesEnum
+} from "@ssmovzh/chatterly-common-utils";
 import { AppModule } from "./app.module";
 
 (async () => {
