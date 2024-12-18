@@ -7,13 +7,20 @@ on:
 
 jobs:
   test-build-deploy:
-    name: Test, Build, and Deploy Public API
+    name: Test, Build, and Deploy Email Verification Service
     runs-on: ubuntu-latest
 
     steps:
       # Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v3
+
+      # Log in to Heroku Container Registry
+      - name: Log in to Heroku Container Registry
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com
 
       # Build Docker image
       - name: Build Docker Image
@@ -25,7 +32,6 @@ jobs:
       # Push Docker image to Heroku Container Registry
       - name: Push Docker Image to Heroku
         run: |
-          echo ${HEROKU_API_KEY} | docker login --username=_ --password-stdin registry.heroku.com
           docker push registry.heroku.com/${{ secrets.PUBLIC_API_HEROKU_APP_NAME }}/web
 
       # Release the app on Heroku
